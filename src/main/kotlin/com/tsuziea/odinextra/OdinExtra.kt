@@ -11,6 +11,7 @@ import com.tsuziea.odinextra.features.impl.dungeon.CloseChest
 import com.tsuziea.odinextra.features.impl.render.CameraClip
 import com.tsuziea.odinextra.features.impl.render.Fullbright
 import com.tsuziea.odinextra.features.impl.render.NameChanger
+import com.tsuziea.odinextra.features.impl.render.Nametags
 import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
 import com.tsuziea.odinextra.features.impl.skyblock.AutoExperiments
 import com.tsuziea.odinextra.features.impl.skyblock.AutoHarp
@@ -28,7 +29,7 @@ object OdinExtra : ClientModInitializer {
             // dungeon
             AutoGFS, CloseChest,
             // render
-            CameraClip, Fullbright, NameChanger,
+            CameraClip, Fullbright, NameChanger, Nametags,
             // skyblock
             AutoClicker, AutoHarp, AutoExperiments
         )
