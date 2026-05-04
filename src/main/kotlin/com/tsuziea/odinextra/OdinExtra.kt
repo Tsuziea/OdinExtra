@@ -7,6 +7,7 @@ import com.tsuziea.odinextra.features.impl.boss.AutoTerms
 import com.tsuziea.odinextra.features.impl.boss.DragonsHp
 import com.tsuziea.odinextra.features.impl.boss.FuckDiorite
 import com.tsuziea.odinextra.features.impl.render.Fullbright
+import com.tsuziea.odinextra.features.impl.render.NameChanger
 import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
 import net.fabricmc.api.ClientModInitializer
 
@@ -20,7 +21,7 @@ object OdinExtra : ClientModInitializer {
             // boss
             AutoTerms, DragonsHp, FuckDiorite,
             // render
-            Fullbright,
+            Fullbright, NameChanger,
             // skyblock
             AutoClicker
         )
