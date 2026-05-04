@@ -6,6 +6,7 @@ import com.odtheking.odin.features.ModuleManager
 import com.tsuziea.odinextra.features.impl.boss.AutoTerms
 import com.tsuziea.odinextra.features.impl.boss.DragonsHp
 import com.tsuziea.odinextra.features.impl.boss.FuckDiorite
+import com.tsuziea.odinextra.features.impl.render.Fullbright
 import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
 import net.fabricmc.api.ClientModInitializer
 
@@ -18,6 +19,8 @@ object OdinExtra : ClientModInitializer {
         ModuleManager.registerModules(ModuleConfig("OdinExtra.json"),
             // boss
             AutoTerms, DragonsHp, FuckDiorite,
+            // render
+            Fullbright,
             // skyblock
             AutoClicker
         )
