@@ -10,6 +10,7 @@ import com.tsuziea.odinextra.features.impl.dungeon.AutoGFS
 import com.tsuziea.odinextra.features.impl.render.Fullbright
 import com.tsuziea.odinextra.features.impl.render.NameChanger
 import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
+import com.tsuziea.odinextra.features.impl.skyblock.AutoHarp
 import net.fabricmc.api.ClientModInitializer
 
 @Suppress("unused")
@@ -24,7 +25,7 @@ object OdinExtra : ClientModInitializer {
             // render
             Fullbright, NameChanger, AutoGFS,
             // skyblock
-            AutoClicker
+            AutoClicker, AutoHarp
         )
     }
 }
