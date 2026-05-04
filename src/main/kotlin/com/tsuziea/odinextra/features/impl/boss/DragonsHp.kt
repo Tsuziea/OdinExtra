@@ -17,7 +17,8 @@ import java.util.UUID
 
 object DragonsHp : Module(
     name = "Dragons HP",
-    description = "Smoother.") {
+    description = "Smoother."
+) {
     private var dragons = emptySet<EnderDragon>()
     private val dragonHealthMap = mutableMapOf<UUID, Float>()
 

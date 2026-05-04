@@ -24,7 +24,8 @@ import kotlin.collections.get
 
 object TriggerBot : Module(
     name = "Trigger Bot",
-    description = "Automatically triggers when hit result is target.") {
+    description = "Automatically triggers when hit result is target."
+) {
 
     private val secret by BooleanSetting("Secret", true, desc = "Right clicks on secrets.")
     private val crystal by BooleanSetting("Crystal", true, desc = "Right clicks on crystals in P1.")

@@ -10,7 +10,8 @@ import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
 
 object CloseChest : Module(
     name = "Close Chest",
-    description = "Allows you to instantly close chests automatically.") {
+    description = "Allows you to instantly close chests automatically."
+) {
     init {
         onReceive<ClientboundOpenScreenPacket> {
             if (!DungeonUtils.inDungeons) return@onReceive

@@ -18,7 +18,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 
 object AutoGFS : Module(
     name = "Auto GFS",
-    description = "Automatically refills certain items from your sacks.") {
+    description = "Automatically refills certain items from your sacks."
+) {
     private val inKuudra by BooleanSetting("In Kuudra", true, desc = "Only gfs in Kuudra.")
     private val inDungeon by BooleanSetting("In Dungeon", true, desc = "Only gfs in Dungeons.")
     private val refillOnDungeonStart by BooleanSetting("Refill on Dungeon Start", true, desc = "Refill when a dungeon starts.")

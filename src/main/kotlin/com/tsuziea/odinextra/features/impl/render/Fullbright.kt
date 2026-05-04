@@ -7,8 +7,8 @@ import com.tsuziea.odinextra.mixin.OptionInstanceAccessor
 
 object Fullbright : Module(
     name = "Fullbright",
-    description = "Forces gamma to full brightness.") {
-
+    description = "Forces gamma to full brightness."
+) {
     init {
         on< WorldEvent.Load> {
             if (mc.options.gamma().get() < 16.0)
