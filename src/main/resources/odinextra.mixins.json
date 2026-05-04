@@ -12,6 +12,8 @@
     "requireAnnotations": true
   },
   "client": [
+    "odin.MapRoomMixin",
+    "odin.ModuleManagerMixin",
     "OptionInstanceAccessor",
     "StringDecomposerMixin"
   ]
