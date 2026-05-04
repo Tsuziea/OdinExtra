@@ -7,6 +7,7 @@ import com.tsuziea.odinextra.features.impl.boss.AutoTerms
 import com.tsuziea.odinextra.features.impl.boss.DragonsHp
 import com.tsuziea.odinextra.features.impl.boss.FuckDiorite
 import com.tsuziea.odinextra.features.impl.dungeon.AutoGFS
+import com.tsuziea.odinextra.features.impl.dungeon.AutoSell
 import com.tsuziea.odinextra.features.impl.dungeon.CloseChest
 import com.tsuziea.odinextra.features.impl.render.CameraClip
 import com.tsuziea.odinextra.features.impl.render.Fullbright
@@ -27,7 +28,7 @@ object OdinExtra : ClientModInitializer {
             // boss
             AutoTerms, DragonsHp, FuckDiorite,
             // dungeon
-            AutoGFS, CloseChest,
+            AutoGFS, AutoSell, CloseChest,
             // render
             CameraClip, Fullbright, NameChanger, Nametags,
             // skyblock
