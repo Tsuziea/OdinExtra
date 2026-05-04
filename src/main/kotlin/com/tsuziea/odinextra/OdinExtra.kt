@@ -6,6 +6,7 @@ import com.odtheking.odin.features.ModuleManager
 import com.tsuziea.odinextra.features.impl.boss.AutoTerms
 import com.tsuziea.odinextra.features.impl.boss.DragonsHp
 import com.tsuziea.odinextra.features.impl.boss.FuckDiorite
+import com.tsuziea.odinextra.features.impl.dungeon.AutoGFS
 import com.tsuziea.odinextra.features.impl.render.Fullbright
 import com.tsuziea.odinextra.features.impl.render.NameChanger
 import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
@@ -21,7 +22,7 @@ object OdinExtra : ClientModInitializer {
             // boss
             AutoTerms, DragonsHp, FuckDiorite,
             // render
-            Fullbright, NameChanger,
+            Fullbright, NameChanger, AutoGFS,
             // skyblock
             AutoClicker
         )
