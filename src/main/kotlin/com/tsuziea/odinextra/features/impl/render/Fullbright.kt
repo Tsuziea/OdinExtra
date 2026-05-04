@@ -12,7 +12,6 @@ object Fullbright : Module(
 
     init {
         on<TickEvent.End> {
-            if (!enabled) return@on
             val currentGamma = runCatching { mc.options.gamma().get() }.getOrNull() ?: return@on
             if (abs(currentGamma - 16.0) > 0.1) {
                 setGamma(16.0)

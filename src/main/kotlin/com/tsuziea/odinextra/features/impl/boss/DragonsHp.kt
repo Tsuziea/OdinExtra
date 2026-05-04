@@ -23,7 +23,6 @@ object DragonsHp : Module(
 
     init {
         on<PacketEvent.Receive> {
-            if (!enabled) return@on
             if (!DungeonUtils.inBoss || DungeonUtils.getF7Phase() != M7Phases.P5) return@on
 
             val packet = packet as? ClientboundSetEntityDataPacket ?: return@on
@@ -34,7 +33,6 @@ object DragonsHp : Module(
         }
 
         on<TickEvent.End> {
-            if (!enabled) return@on
             if (!DungeonUtils.inBoss || DungeonUtils.getF7Phase() != M7Phases.P5) {
                 dragons = emptySet()
                 dragonHealthMap.clear()
@@ -53,7 +51,6 @@ object DragonsHp : Module(
         }
 
         on<RenderEvent.Extract> {
-            if (!enabled) return@on
             if (!DungeonUtils.inBoss || DungeonUtils.getF7Phase() != M7Phases.P5) return@on
 
             dragons.forEach { dragon ->
