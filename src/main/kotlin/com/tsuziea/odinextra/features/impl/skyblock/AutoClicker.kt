@@ -3,6 +3,7 @@ package com.tsuziea.odinextra.features.impl.skyblock
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
+import com.odtheking.odin.clickgui.settings.impl.KeybindSetting.Companion.isDown
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.TickEvent
@@ -42,7 +43,7 @@ object AutoClicker : Module(
             if (mc.player == null) return@on
             val now = System.currentTimeMillis()
 
-            if (rightActive() && isHolding("TERMINATOR")) {
+            if (mc.options.keyUse.defaultKey.isDown() && isHolding("TERMINATOR")) {
                 if (now < nextRightClick) return@on
                 nextRightClick = now + ((1000.0 / leftCps) + ((Math.random() - .5) * 60.0))
                 leftClick()
