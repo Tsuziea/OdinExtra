@@ -1,5 +1,6 @@
 package com.tsuziea.odinextra.features.impl.boss
 
+import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.TerminalEvent
@@ -17,9 +18,10 @@ object AutoTerms : Module (
     name = "Auto Terms",
     description = "Automatically solves terminals."
 ) {
-    private val delay by NumberSetting("Delay", 5L, 1, 10, unit = "ms", desc = "Delay after container updates.")
+    private val delay by NumberSetting("Delay", 10L, 0, 50, 10, unit = "ms", desc = "Delay after container updates.")
     private val clickDelay by NumberSetting("Click Delay", 200L, 200, 300, 10, unit = "ms", desc = "Delay between clicks.")
     private val firstClickDelay by NumberSetting("First Click Delay", 350L, 250, 500, 10, unit = "ms", desc = "Delay before first click.")
+    private val skipMelody by BooleanSetting("Skip Melody", true, desc = "Skipping delay checks for Melody.")
     private var lastClickTime = 0L
     private var firstClick = true
     private var containerUpdated = false
@@ -31,12 +33,18 @@ object AutoTerms : Module (
         on<ScreenEvent.Render> {
             with(currentTerm ?: return@on) {
                 if (solution.isEmpty()) return@on
-                if (type != TerminalTypes.MELODY && !containerUpdated) return@on
-
-                if (!queued) queueClicks()
 
                 val now = System.currentTimeMillis()
                 if (firstClick && (now - lastClickTime < firstClickDelay)) return@on
+
+                if (skipMelody && (type == TerminalTypes.MELODY)) {
+                    click(solution.find { it % 9 == 7 } ?: return@on, 2, false)
+                    return@on
+                }
+
+                if (!queued) queueClicks()
+
+                if (type != TerminalTypes.MELODY && !containerUpdated) return@on
                 if (now - lastClickTime < clickDelay) return@on
                 if (now - lastContainerUpdate < delay) return@on
 
