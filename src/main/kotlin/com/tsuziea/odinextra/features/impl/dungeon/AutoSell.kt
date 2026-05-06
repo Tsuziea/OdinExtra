@@ -4,40 +4,55 @@ import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.equalsOneOf
+import com.odtheking.odin.utils.lore
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.noControlCodes
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.item.Items
 
 object AutoSell : Module(
     name = "Auto Sell",
     description = "Automatically sell items in trades and cookie menus.",
 ) {
-    private val delay by NumberSetting("Delay", 6, 2, 10, 1, desc = "The delay between each click.", unit = " ticks")
-    private val randomization by NumberSetting("Randomization", 1, 0, 5, 1, desc = "Random delay variance", unit = " ticks")
+    private val delay by NumberSetting("Delay", 200, 50, 300, 50, desc = "Delay between each click.", unit = " ms")
 
-    private var last = 0L
-    private var next = 0L
+    private var lastClick = 0L
 
     init {
         on<TickEvent.Start> {
             val player = mc.player ?: return@on
             val screen = mc.screen as? AbstractContainerScreen<*> ?: return@on
-            if (!screen.title.string.noControlCodes.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant", "Ophelia")) return@on
+            val menu = screen.menu
+
+            val hasSellSlot = listOf(31, 49).any { slotIndex ->
+                val stack = menu.slots.getOrNull(slotIndex)?.item ?: return@any false
+
+                val name = stack.hoverName.string.noControlCodes
+                val isSell = stack.item == Items.HOPPER && name.contains("sell item", true)
+                val isBuyback = stack.lore.lastOrNull()?.string?.noControlCodes?.contains("click to buyback", true) == true
+
+                isSell || isBuyback
+            }
+
+            if (!hasSellSlot) {
+                modMessage("returned no sell slot found")
+                return@on
+            }
 
             val now = System.currentTimeMillis()
-            if (now - last < next) return@on
+            if (now - lastClick < delay) return@on
 
-            screen.menu.slots.forEachIndexed { index, slot ->
-                val name = slot.item.hoverName.string.noControlCodes.lowercase()
+            menu.slots.forEachIndexed { index, slot ->
+                if (slot.container !is Inventory) return@forEachIndexed
+                val name = slot.item.hoverName.string.noControlCodes
 
-                if (slot.item.isEmpty || blacklist.any { name.contains(it, true) }) return@forEachIndexed
+                if (blacklist.any { name.contains(it, true) }) return@forEachIndexed
                 if (!sellList.any { name.contains(it, true) }) return@forEachIndexed
 
-                last = now
-                next = ((delay + (0..randomization).random()) * 50).toLong()
-
-                mc.gameMode?.handleInventoryMouseClick(screen.menu.containerId, index, 0, ClickType.CLONE, player)
+                lastClick = now
+                mc.gameMode?.handleInventoryMouseClick(menu.containerId, index, 0, ClickType.CLONE, player)
                 return@forEachIndexed
             }
         }
