@@ -18,14 +18,13 @@ object AutoTerms : Module (
     name = "Auto Terms",
     description = "Automatically solves terminals."
 ) {
-    private val delay by NumberSetting("Delay", 10L, 0, 50, 10, unit = "ms", desc = "Delay after container updates.")
-    private val clickDelay by NumberSetting("Click Delay", 200L, 200, 300, 10, unit = "ms", desc = "Delay between clicks.")
-    private val firstClickDelay by NumberSetting("First Click Delay", 350L, 250, 500, 10, unit = "ms", desc = "Delay before first click.")
-    private val skipMelody by BooleanSetting("Skip Melody", true, desc = "Skipping delay checks for Melody.")
-    private var lastClickTime = 0L
+    private val delay by NumberSetting("Delay", 200L, 100, 300, 10, "Delay between each click.", "ms")
+    private val firstClickDelay by NumberSetting("First Click Delay", 300L, 200, 500, 10, "Delay before first click.", "ms")
+    private val skipMelody by BooleanSetting("Skip Melody", true, "Skipping delay checks for Melody.")
     private var firstClick = true
+    private var lastClickAt = 0L
     private var containerUpdated = false
-    private var lastContainerUpdate = 0L
+    private var lastContainerUpdateAt = 0L
     private val queue = ArrayDeque<Int>()
     private var queued = false
 
@@ -35,7 +34,7 @@ object AutoTerms : Module (
                 if (solution.isEmpty()) return@on
 
                 val now = System.currentTimeMillis()
-                if (firstClick && (now - lastClickTime < firstClickDelay)) return@on
+                if (firstClick && (now - lastClickAt < firstClickDelay)) return@on
 
                 if (skipMelody && (type == TerminalTypes.MELODY)) {
                     click(solution.find { it % 9 == 7 } ?: return@on, 2, false)
@@ -45,11 +44,10 @@ object AutoTerms : Module (
                 if (!queued) queueClicks()
 
                 if (type != TerminalTypes.MELODY && !containerUpdated) return@on
-                if (now - lastClickTime < clickDelay) return@on
-                if (now - lastContainerUpdate < delay) return@on
+                if (now - lastClickAt < delay) return@on
 
                 firstClick = false
-                lastClickTime = now
+                lastClickAt = now
                 containerUpdated = false
 
                 val slotIndex = solution.firstOrNull() ?: return@on
@@ -68,15 +66,15 @@ object AutoTerms : Module (
         }
 
         on<TerminalEvent.Open> {
-            lastClickTime = System.currentTimeMillis()
             firstClick = true
+            lastClickAt= System.currentTimeMillis()
             queued = false
         }
 
         onReceive<ClientboundOpenScreenPacket> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@onReceive
             containerUpdated = true
-            lastContainerUpdate = System.currentTimeMillis()
+            lastContainerUpdateAt = System.currentTimeMillis()
         }
     }
 
