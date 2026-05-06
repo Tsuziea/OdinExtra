@@ -9,11 +9,9 @@ object NameChanger : Module(
     name = "Name Changer",
     description = "Replaces your name with the given nick, color codes work (&)."
 ) {
-    val nick by StringSetting(
-        name = "Nick", default = "Odin", 32, desc = "The nick to replace your name with."
-    )
+    private val nick by StringSetting(name = "Nick", default = "Odin", 32, desc = "The nick to replace your name with.")
 
-    fun hideName(): String =
+    fun nickName(): String =
         nick.replace("&", "§")
 
     val pattern: Pattern by lazy {

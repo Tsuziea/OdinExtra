@@ -1,6 +1,5 @@
 package com.tsuziea.odinextra.features.impl.skyblock
 
-import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting.Companion.isDown
@@ -50,7 +49,7 @@ object AutoClicker : Module(
             } else {
                 if (leftActive() && now >= nextLeftClick) {
                     if (mc.hitResult?.type == HitResult.Type.BLOCK) {
-                        KeyMapping.set(OdinMod.mc.options.keyAttack.defaultKey, true)
+                        KeyMapping.set(mc.options.keyAttack.defaultKey, true)
                         return@on
                     }
 
@@ -60,7 +59,7 @@ object AutoClicker : Module(
 
                 if (rightActive() && now >= nextRightClick) {
                     if (mc.hitResult?.type != HitResult.Type.BLOCK || mc.player?.mainHandItem?.item !is BlockItem) {
-                        KeyMapping.set(OdinMod.mc.options.keyUse.defaultKey, true)
+                        KeyMapping.set(mc.options.keyUse.defaultKey, true)
                         return@on
                     }
 

@@ -16,7 +16,7 @@ object AutoSell : Module(
     name = "Auto Sell",
     description = "Automatically sell items in trades and cookie menus.",
 ) {
-    private val delay by NumberSetting("Delay", 200, 50, 300, 50, desc = "Delay between each click.", unit = " ms")
+    private val delay by NumberSetting("Delay", 200, 50, 300, 50, "Delay between each click.", " ms")
 
     private var lastClick = 0L
 

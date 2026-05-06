@@ -30,11 +30,7 @@ object TriggerBot : Module(
     private val secret by BooleanSetting("Secret", true, desc = "Right clicks on secrets.")
     private val crystal by BooleanSetting("Crystal", true, desc = "Right clicks on crystals in P1.")
     private val lever by BooleanSetting("Lever", true, desc = "Left clicks on levers in P3.")
-    private val relic by BooleanSetting(
-        "Relic",
-        true,
-        desc = "Right clicks on relics and their respective pedestals in P5."
-    )
+    private val relic by BooleanSetting("Relic", true, desc = "Right clicks on relics and their respective pedestals in P5.")
 
     private var lastClick = 0L
     private val clickedSecrets = mutableSetOf<BlockPos>()

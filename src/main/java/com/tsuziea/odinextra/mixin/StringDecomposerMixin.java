@@ -24,7 +24,7 @@ public class StringDecomposerMixin {
         if (!NameChanger.INSTANCE.getEnabled())
             return text;
 
-        String replacement = NameChanger.INSTANCE.hideName();
+        String replacement = NameChanger.INSTANCE.nickName();
         if (replacement.isEmpty())
             return text;
 
