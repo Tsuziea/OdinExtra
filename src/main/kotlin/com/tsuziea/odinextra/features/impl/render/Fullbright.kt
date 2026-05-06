@@ -16,11 +16,6 @@ object Fullbright : Module(
         }
     }
 
-    override fun onEnable() {
-        super.onEnable()
-        setGamma(16.0)
-    }
-
     override fun onDisable() {
         super.onDisable()
         setGamma(1.0)
