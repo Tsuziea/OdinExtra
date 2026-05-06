@@ -36,10 +36,7 @@ object AutoSell : Module(
                 isSell || isBuyback
             }
 
-            if (!hasSellSlot) {
-                modMessage("returned no sell slot found")
-                return@on
-            }
+            if (!hasSellSlot) return@on
 
             val now = System.currentTimeMillis()
             if (now - lastClick < delay) return@on
