@@ -16,7 +16,7 @@ object AutoSuperboom : Module(
     name = "Auto superboom",
     description = "Automatically swaps to superboom when you click a breakable wall!"
 ) {
-    private val delay by NumberSetting("Delay", 50, 50, 200, increment = 5, unit = "ms", desc = "Delay between each actions.")
+    private val delay by NumberSetting("Delay", 50, 50, 200, 50, "Delay between each action.", "ms")
 
     private var lastAction = 0L
     private var originalSlot = -1
