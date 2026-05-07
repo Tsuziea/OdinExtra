@@ -106,7 +106,7 @@ object AutoLeap : Module(
         val clazz = selfClass()
 
         if (msg.contains("ARGH!")) {
-            if (necronDieEnabled && clazz != DungeonClass.Healer && DungeonUtils.getF7Phase() == M7Phases.P5 && ++archCount == 2){
+            if (necronDieEnabled && clazz != DungeonClass.Healer && DungeonUtils.getF7Phase() != M7Phases.P5 && ++archCount == 2){
                 doLeap(DungeonClass.Healer)
                 archCount = 0
                 return
