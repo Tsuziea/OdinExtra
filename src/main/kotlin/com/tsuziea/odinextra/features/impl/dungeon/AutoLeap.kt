@@ -20,11 +20,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.tsuziea.odinextra.events.NewSectionEvent
-import com.tsuziea.odinextra.events.WitherDieEvent
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
-import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils.getPlayerSection
 import com.tsuziea.odinextra.utils.dungeon.Section
-import com.tsuziea.odinextra.utils.dungeon.WitherBoss
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 
@@ -32,9 +29,6 @@ object AutoLeap : Module(
     name = "Auto Leap",
     description = "Auto leap during F7/M7 boss phases."
 ) {
-    private val phase1Dropdown by DropdownSetting("Phase 1 Settings", false)
-    private val maxorDieEnabled by BooleanSetting("Maxor Die", true, desc = "-> Berserk.").withDependency { phase1Dropdown }
-
     private val phase2Dropdown by DropdownSetting("Phase 2 Settings", false)
     private val stormEnragedEnabled by BooleanSetting("Storm Enraged", true, desc = "-> Mage.").withDependency { phase2Dropdown }
     private val stormDieEnabled by BooleanSetting("Storm Die", true, desc = "-> Healer.").withDependency { phase2Dropdown }
@@ -42,18 +36,16 @@ object AutoLeap : Module(
     private val phase3Dropdown by DropdownSetting("Phase 3 Settings", false)
     private val i4CompleteEnabled by BooleanSetting("I4 Complete", true, desc = "Berserk -> Tank.").withDependency { phase3Dropdown }
     private val s1ToS2Enabled by BooleanSetting("S1->S2", true, desc = "-> Mage/Archer.").withDependency { phase3Dropdown }
-    private val s1ToS2Target by SelectorSetting("S1->S2 Target", "Mage", listOf("Mage", "Archer"), desc = "Leap target.").withDependency { phase3Dropdown && s1ToS2Enabled }
+    private val s1ToS2Target by SelectorSetting("Target", "Mage", listOf("Mage", "Archer"), desc = "Leap target.").withDependency { phase3Dropdown && s1ToS2Enabled }
     private val s2ToS3Enabled by BooleanSetting("S2->S3", true, desc = "-> Healer.").withDependency { phase3Dropdown }
     private val s3ToS4Enabled by BooleanSetting("S3->S4", true, desc = "-> Mage.").withDependency { phase3Dropdown }
     private val coreOpenEnabled by BooleanSetting("Core Open", true, desc = "-> Mage.").withDependency { phase3Dropdown }
 
     private val phase4Dropdown by DropdownSetting("Phase 4 Settings", false)
-    private val phase4WitherDieEnabled by BooleanSetting("Wither Die", true, desc = "Phase 4 wither die -> Healer.").withDependency { phase4Dropdown }
+    private val necronDieEnabled by BooleanSetting("Necron Die", true, desc = "-> Healer.").withDependency { phase4Dropdown }
 
     private val phase5Dropdown by DropdownSetting("Phase 5 Settings", false)
     private val relicEnabled by BooleanSetting("Relic", true, desc = "Green -> Archer; Purple/Blue -> Berserk").withDependency { phase5Dropdown }
-
-    private var lastWitherBoss: WitherBoss? = null
 
     private enum class LeapState { IDLE, SELECT_ITEM, OPEN_MENU, PENDING_MENU, CLICK_TARGET }
     private var leapState = LeapState.IDLE
@@ -61,12 +53,14 @@ object AutoLeap : Module(
     private var targetName: String? = null
     private var leapMenu: AbstractContainerScreen<*>? = null
 
+    private var archCount = 0
+
     private val leapItemIds = setOf("SPIRIT_LEAP", "INFINITE_SPIRIT_LEAP")
     private val completedRegex = Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)$")
 
     init {
         on<WorldEvent.Load> {
-            lastWitherBoss = null
+            archCount = 0
             resetLeap()
         }
 
@@ -90,12 +84,8 @@ object AutoLeap : Module(
             if (DungeonUtils.inBoss) handleMessage(value.noControlCodes)
         }
 
-        on <WitherDieEvent> {
-            handleWitherDie()
-        }
-
         on<NewSectionEvent> {
-            handleNewSection()
+            handleNewSection(previous)
         }
     }
 
@@ -113,43 +103,39 @@ object AutoLeap : Module(
     }
 
     private fun handleMessage(msg: String) {
-        if (stormEnragedEnabled && selfClass() == DungeonClass.Archer && msg.contains("Storm is enraged")) {
+        val clazz = selfClass()
+
+        if (msg.contains("ARGH!")) {
+            if (necronDieEnabled && clazz != DungeonClass.Healer && DungeonUtils.getF7Phase() == M7Phases.P5 && ++archCount == 2){
+                doLeap(DungeonClass.Healer)
+                archCount = 0
+                return
+            }
+        }
+
+        if (stormEnragedEnabled && clazz == DungeonClass.Archer && msg.contains("Storm is enraged")) {
             doLeap(DungeonClass.Mage)
             return
         }
 
-        if (i4CompleteEnabled && selfClass() == DungeonClass.Berserk && ExtraDungeonUtils.section == Section.S1 &&inSection(Section.S4)) {
+        if (stormDieEnabled && clazz !in setOf(DungeonClass.Healer, DungeonClass.Berserk) && msg.contains("I should have known that I stood no chance")) {
+            doLeap(DungeonClass.Healer)
+            return
+        }
+
+        if (i4CompleteEnabled && clazz == DungeonClass.Berserk && ExtraDungeonUtils.section == Section.S1) {
             val name = mc.player?.name?.string?.noControlCodes ?: return
             val match = completedRegex.find(msg) ?: return
             val actor = match.groupValues[1].noControlCodes
             val type = match.groupValues[3]
 
             if (actor.equals(name, true) && type == "device") doLeap(DungeonClass.Tank)
+            return
         }
     }
 
-    private fun handleWitherDie() {
-        val clazz = selfClass()
-
-        when (DungeonUtils.getF7Phase()) {
-            M7Phases.P1 -> {
-                if (maxorDieEnabled && clazz != DungeonClass.Berserk) doLeap(DungeonClass.Berserk)
-            }
-
-            M7Phases.P2 -> {
-                if (stormDieEnabled && clazz != DungeonClass.Healer) doLeap(DungeonClass.Healer)
-            }
-
-            M7Phases.P4 -> {
-                if (phase4WitherDieEnabled && clazz in setOf(DungeonClass.Archer, DungeonClass.Mage, DungeonClass.Tank)) doLeap(DungeonClass.Healer)
-            }
-
-            else -> Unit
-        }
-    }
-
-    private fun handleNewSection() {
-        when (ExtraDungeonUtils.section) {
+    private fun handleNewSection(section: Section) {
+        when (section) {
             Section.S1 -> {
                 if (s1ToS2Enabled) {
                     val target = when (s1ToS2Target) {
@@ -157,20 +143,20 @@ object AutoLeap : Module(
                         1 -> DungeonClass.Archer
                         else -> DungeonClass.Archer
                     }
-                    if (selfClass() != target && !inSection(Section.S2)) doLeap(target)
+                    if (selfClass() != target) doLeap(target)
                 }
             }
 
             Section.S2 -> {
-                if (s2ToS3Enabled && selfClass() !in listOf(DungeonClass.Healer, DungeonClass.Mage) && !inSection(Section.S3)) doLeap(DungeonClass.Healer)
+                if (s2ToS3Enabled && selfClass() !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(DungeonClass.Healer)
             }
 
             Section.S3 -> {
-                if (s3ToS4Enabled && selfClass() != DungeonClass.Mage && !inSection(Section.S4)) doLeap(DungeonClass.Mage)
+                if (s3ToS4Enabled && selfClass() != DungeonClass.Mage) doLeap(DungeonClass.Mage)
             }
 
             Section.S4 -> {
-                if (coreOpenEnabled && selfClass() != DungeonClass.Mage && !inSection(Section.CORE)) doLeap(DungeonClass.Mage)
+                if (coreOpenEnabled && selfClass() != DungeonClass.Mage) doLeap(DungeonClass.Mage)
             }
 
             else -> return
@@ -180,11 +166,6 @@ object AutoLeap : Module(
     private fun selfClass(): DungeonClass? {
         val name = mc.player?.name?.string?.noControlCodes?.lowercase() ?: return null
         return DungeonUtils.dungeonTeammates.firstOrNull { it.name.noControlCodes.lowercase() == name }?.clazz
-    }
-
-    private fun inSection(section: Section): Boolean {
-        val player = mc.player ?: return false
-        return getPlayerSection(player) == section
     }
 
     private fun handleLeap() {
@@ -241,9 +222,9 @@ object AutoLeap : Module(
             modMessage("§a[AutoLeap] §eLeap target dead.§r")
             resetLeap()
         }
-
         targetName = teammate.name.noControlCodes
         leapState = LeapState.SELECT_ITEM
+        modMessage("§a[AutoLeap] §eLeaping to $targetName.§r")
     }
 
     private fun resetLeap() {

@@ -8,14 +8,12 @@ import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.tsuziea.odinextra.events.NewSectionEvent
-import com.tsuziea.odinextra.events.WitherDieEvent
 import com.odtheking.odin.features.impl.dungeon.DungeonMap
 import com.odtheking.odin.features.impl.dungeon.map.DungMap
 import com.odtheking.odin.features.impl.dungeon.map.MapScanner
 import com.odtheking.odin.features.impl.dungeon.map.SpecialColumn
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.tsuziea.odinextra.mixin.BossHealthOverlayAccessor
 import com.tsuziea.odinextra.utils.dungeon.Section.*
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
@@ -29,13 +27,11 @@ object ExtraDungeonListener {
     private var terminals = 0
     private var gate = false
     private var levers = 0
-    private var lastWitherName: String? = null
 
     init {
         on<WorldEvent.Load> {
             dungeonStates = ExtraDungeonStates()
             resetSectionState()
-            lastWitherName = null
 
             if (DungeonMap.enabled) return@on
             SpecialColumn.unload()
@@ -49,7 +45,6 @@ object ExtraDungeonListener {
 
         on<TickEvent.End> {
             if (DungeonUtils.inClear && !DungeonMap.enabled) MapScanner.scan(world)
-            if (DungeonUtils.inBoss) updateWitherBossState()
         }
 
         onReceive<ClientboundMapItemDataPacket> {
@@ -107,7 +102,7 @@ object ExtraDungeonListener {
                 }
 
                 coreOpeningRegex.matches(message) -> {
-                    dungeonStates.section = CORE
+                    newSection()
                     resetSectionState()
                 }
             }
@@ -122,7 +117,6 @@ object ExtraDungeonListener {
     private val goldorRegex = Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$")
     private val gateRegex = Regex("^The gate has been destroyed!$")
     private val coreOpeningRegex = Regex("^The Core entrance is opening!$")
-    private val witherBossBarRegex = Regex("\\b(maxor|storm|goldor|necron)\\b", RegexOption.IGNORE_CASE)
 
     private fun newSection() {
         val previous = dungeonStates.section
@@ -135,7 +129,7 @@ object ExtraDungeonListener {
         }
         dungeonStates.section = current
         resetSectionState()
-        EventBus.post(NewSectionEvent())
+        EventBus.post(NewSectionEvent(previous))
     }
 
     private fun resetSectionState() {
@@ -148,32 +142,9 @@ object ExtraDungeonListener {
         levers = 0
     }
 
-    private fun updateWitherBossState() {
-        if (!DungeonUtils.inBoss) return
-
-        val overlay = mc.gui.bossOverlay as? BossHealthOverlayAccessor
-        val bars = overlay?.`odinextra$getEvents`()?.values.orEmpty()
-        val matchedNames = bars.mapNotNull { bar ->
-            val title = bar.name.string.noControlCodes
-            witherBossBarRegex.find(title)?.groupValues?.getOrNull(1)?.lowercase()
-        }
-        val alive = matchedNames.isNotEmpty()
-
-        val previous = dungeonStates.witherBoss
-        val current = if (alive) WitherBoss.Alive else WitherBoss.Dead
-        if (alive) lastWitherName = matchedNames.firstOrNull()
-        dungeonStates.witherBoss = current
-
-        if (previous == WitherBoss.Alive && current == WitherBoss.Dead) {
-            EventBus.post(WitherDieEvent(lastWitherName ?: "unknown"))
-            lastWitherName = null
-        }
-    }
-
     data class ExtraDungeonStates(
         var keyPicked: Boolean = false,
         var keyPicker: String? = null,
         var section: Section = S1,
-        var witherBoss: WitherBoss = WitherBoss.Dead
     )
 }
