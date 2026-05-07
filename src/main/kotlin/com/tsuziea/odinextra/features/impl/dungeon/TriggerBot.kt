@@ -33,12 +33,10 @@ object TriggerBot : Module(
     private val relic by BooleanSetting("Relic", true, desc = "Right clicks on relics and their respective pedestals in P5.")
 
     private var lastClick = 0L
-    private val clickedSecrets = mutableSetOf<BlockPos>()
 
     init {
         on<WorldEvent.Load> {
             lastClick = 0L
-            clickedSecrets.clear()
         }
 
         on<TickEvent.Start> {
@@ -62,10 +60,9 @@ object TriggerBot : Module(
         val hitBlock = (hit as? BlockHitResult)?.blockPos ?: return
         val state = mc.level?.getBlockState(hitBlock) ?: return
 
-        if (DungeonUtils.isSecret(state, hitBlock) && !clickedSecrets.contains(hitBlock)) {
+        if (DungeonUtils.isSecret(state, hitBlock)) {
             lastClick = System.currentTimeMillis()
             rightClick()
-            clickedSecrets.add(hitBlock)
         }
     }
 
