@@ -19,7 +19,10 @@ object Mob {
             if (!e.isAlive) return@forEach
 
             if (e is Bat) entities.add(e)
-            if (e is WitherBoss && isWitherPhase()) entities.add(e)
+            if (e is WitherBoss && isWitherPhase()) {
+                if (e.invulnerableTicks == 800 && !e.isPowered) return
+                entities.add(e)
+            }
 
             val stand = e as? ArmorStand ?: return@forEach
             val name = stand.name.string

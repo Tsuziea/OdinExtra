@@ -18,8 +18,6 @@ import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.tsuziea.odinextra.features.impl.render.esp.Door
-import com.tsuziea.odinextra.features.impl.render.esp.Key
-import com.tsuziea.odinextra.features.impl.render.esp.Key.KeyType
 import com.tsuziea.odinextra.features.impl.render.esp.Mimic
 import com.tsuziea.odinextra.features.impl.render.esp.Mob
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
@@ -31,12 +29,6 @@ object DungeonESP : Module(
     name = "Dungeon ESP",
     description = "Dungeon mob, boss, and door ESP."
 ) {
-    private val keyDropdown by DropdownSetting("Key Dropdown", false)
-    private val keyEnabled by BooleanSetting("Key", true, desc = "Highlight wither and blood keys.").withDependency { keyDropdown }
-    private val keyStyle by SelectorSetting("Key Style", "Filled Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.").withDependency { keyDropdown && keyEnabled }
-    private val witherColor by ColorSetting("Wither Color", Colors.BLACK.withAlpha(0.8f), true, desc = "The color of the box.").withDependency { keyDropdown && keyEnabled }
-    private val bloodColor by ColorSetting("Blood Color", Colors.MINECRAFT_RED.withAlpha(0.8f), true, desc = "The color of the box.").withDependency { keyDropdown && keyEnabled }
-
     private val mobDropdown by DropdownSetting("Mob Dropdown", false)
     private val mobEnabled by BooleanSetting("Mob", true, desc = "Highlight starred mobs and bats.").withDependency { mobDropdown }
     private val mobColor by ColorSetting("Mob Color", Colors.MINECRAFT_AQUA, true, "Color of the outline.").withDependency { mobDropdown && mobEnabled }
@@ -62,15 +54,9 @@ object DungeonESP : Module(
         }
 
         on<WorldEvent.Load> {
-            Key.keys.clear()
             Mob.entities.clear()
             Mimic.reset()
             Door.doors.clear()
-        }
-
-        onReceive<ClientboundSetEntityDataPacket> {
-            if (!keyEnabled) return@onReceive
-            Key.onEntityData(id)
         }
 
         on<TickEvent.End> {
@@ -80,19 +66,6 @@ object DungeonESP : Module(
         }
 
         on<RenderEvent.Extract> {
-            if (keyEnabled) {
-                Key.keys.forEach { (keyType, entity) ->
-                    if (!entity.isAlive) return@forEach
-
-                    val color = when (keyType) {
-                        KeyType.Wither -> witherColor
-                        KeyType.Blood -> bloodColor
-                    }
-
-                    drawStyledBox(AABB.unitCubeFromLowerCorner(entity.position().add(-0.5, 1.0, -0.5)), color, keyStyle, false)
-                }
-            }
-
             if (doorEnabled) {
                 Door.doors.forEach { door ->
                     val color = when (door.type) {
