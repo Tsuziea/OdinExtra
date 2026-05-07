@@ -50,7 +50,7 @@ object TriggerBot : Module(
 
             if (secret && DungeonUtils.inClear) triggerSecret()
             if (crystal && DungeonUtils.getF7Phase() == M7Phases.P1) triggerCrystal()
-            if (lever && DungeonUtils.getF7Phase() == M7Phases.P2) triggerLever()
+            if (lever && DungeonUtils.getF7Phase() == M7Phases.P3) triggerLever()
             if (relic && DungeonUtils.getF7Phase() == M7Phases.P5) triggerRelic()
         }
     }
