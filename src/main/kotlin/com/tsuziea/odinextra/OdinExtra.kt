@@ -18,7 +18,6 @@ import com.tsuziea.odinextra.features.impl.render.CameraClip
 import com.tsuziea.odinextra.features.impl.render.DungeonESP
 import com.tsuziea.odinextra.features.impl.render.Fullbright
 import com.tsuziea.odinextra.features.impl.render.NameChanger
-import com.tsuziea.odinextra.features.impl.render.Nametags
 import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
 import com.tsuziea.odinextra.features.impl.skyblock.AutoExperiments
 import com.tsuziea.odinextra.features.impl.skyblock.AutoHarp
@@ -37,7 +36,7 @@ object OdinExtra : ClientModInitializer {
             // dungeon
             AutoGFS, AutoLeap, AutoSell, AutoSuperboom, BreakerHelper, CloseChest, DungeonAbilities, TriggerBot,
             // render
-            CameraClip, DungeonESP, Fullbright, NameChanger, Nametags,
+            CameraClip, DungeonESP, Fullbright, NameChanger,
             // skyblock
             AutoClicker, AutoHarp, AutoExperiments
         )
