@@ -5,7 +5,6 @@ import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.lore
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.noControlCodes
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.entity.player.Inventory
@@ -38,10 +37,10 @@ object AutoSell : Module(
 
             if (!hasSellSlot) return@on
 
-            val now = System.currentTimeMillis()
-            if (now - lastClick < delay) return@on
-
             menu.slots.forEachIndexed { index, slot ->
+                val now = System.currentTimeMillis()
+                if (now - lastClick < delay) return@forEachIndexed
+
                 if (slot.container !is Inventory) return@forEachIndexed
                 val name = slot.item.hoverName.string.noControlCodes
 
