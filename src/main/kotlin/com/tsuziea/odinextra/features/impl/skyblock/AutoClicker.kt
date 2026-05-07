@@ -40,6 +40,7 @@ object AutoClicker : Module(
 
         on<TickEvent.Start> {
             if (mc.player == null) return@on
+            if (mc.screen != null) return@on
             val now = System.currentTimeMillis()
 
             if (mc.options.keyUse.defaultKey.isDown() && isHolding("TERMINATOR")) {
