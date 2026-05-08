@@ -16,6 +16,7 @@
     "odin.ModuleManagerMixin",
     "BossHealthOverlayAccessor",
     "CameraMixin",
+    "EntityRendererMixin",
     "MinecraftMixin",
     "OptionInstanceAccessor",
     "StringDecomposerMixin"

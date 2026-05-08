@@ -9,20 +9,17 @@ import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.map.Door as MapDoor
-import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.drawStyledBox
-import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.tsuziea.odinextra.features.impl.render.esp.Door
 import com.tsuziea.odinextra.features.impl.render.esp.Mimic
 import com.tsuziea.odinextra.features.impl.render.esp.Mob
+import com.tsuziea.odinextra.utils.GlowUtils.setGlow
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.phys.AABB
 
 object DungeonESP : Module(
@@ -30,9 +27,8 @@ object DungeonESP : Module(
     description = "Dungeon mob, boss, and door ESP."
 ) {
     private val mobDropdown by DropdownSetting("Mob Dropdown", false)
-    private val mobEnabled by BooleanSetting("Mob", true, desc = "Highlight starred mobs and bats.").withDependency { mobDropdown }
+    private val mobEnabled by BooleanSetting("Mob", true, desc = "Highlight starred mobs, bats and withers").withDependency { mobDropdown }
     private val mobColor by ColorSetting("Mob Color", Colors.MINECRAFT_AQUA, true, "Color of the outline.").withDependency { mobDropdown && mobEnabled }
-    private val mobStyle by SelectorSetting("Mob Style", "Filled Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.").withDependency { mobDropdown && mobEnabled }
 
     private val doorDropdown by DropdownSetting("Door Dropdown", false)
     private val doorEnabled by BooleanSetting("Door", true, desc = "Highlight doors.").withDependency { doorDropdown }
@@ -84,7 +80,7 @@ object DungeonESP : Module(
 
             if (mobEnabled) {
                 Mob.entities.forEach { entity ->
-                    drawStyledBox(entity.renderBoundingBox, mobColor, mobStyle, false)
+                    entity.setGlow(true, mobColor)
                 }
             }
 
