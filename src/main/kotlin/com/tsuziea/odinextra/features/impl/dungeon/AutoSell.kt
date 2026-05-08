@@ -1,6 +1,5 @@
 package com.tsuziea.odinextra.features.impl.dungeon
 
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -13,12 +12,8 @@ import net.minecraft.world.item.Items
 
 object AutoSell : Module(
     name = "Auto Sell",
-    description = "Automatically sell items in trades and cookie menus.",
+    description = "Insta sell all items.",
 ) {
-    private val delay by NumberSetting("Delay", 200, 50, 300, 50, "Delay between each click.", " ms")
-
-    private var lastClick = 0L
-
     init {
         on<TickEvent.Start> {
             val player = mc.player ?: return@on
@@ -38,16 +33,12 @@ object AutoSell : Module(
             if (!hasSellSlot) return@on
 
             menu.slots.forEachIndexed { index, slot ->
-                val now = System.currentTimeMillis()
-                if (now - lastClick < delay) return@forEachIndexed
-
                 if (slot.container !is Inventory) return@forEachIndexed
                 val name = slot.item.hoverName.string.noControlCodes
 
                 if (blacklist.any { name.contains(it, true) }) return@forEachIndexed
                 if (!sellList.any { name.contains(it, true) }) return@forEachIndexed
 
-                lastClick = now
                 mc.gameMode?.handleInventoryMouseClick(menu.containerId, index, 0, ClickType.CLONE, player)
                 return@forEachIndexed
             }
