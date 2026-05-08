@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.boss
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.events.RenderEvent
@@ -9,15 +9,17 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
+import com.tsuziea.odinextra.utils.CustomCategory
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
-import net.minecraft.util.Mth.lerp
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import java.util.Locale
 import java.util.UUID
 
 object DragonsHp : Module(
     name = "Dragons HP",
-    description = "Smoother."
+    description = "Smoother.",
+    category = CustomCategory.Extra
 ) {
     private var dragons = emptySet<EnderDragon>()
     private val dragonHealthMap = mutableMapOf<UUID, Float>()
@@ -56,7 +58,7 @@ object DragonsHp : Module(
 
             dragons.forEach { dragon ->
                 val t = mc.gameRenderer.mainCamera.partialTickTime.toDouble()
-                val pos = lerp(t, dragon.oldPosition(), dragon.position())
+                val pos = Mth.lerp(t, dragon.oldPosition(), dragon.position())
 
                 val dist = mc.player?.distanceTo(dragon) ?: 0f
                 val scale = (dist / 5f).coerceIn(4f, 6f)

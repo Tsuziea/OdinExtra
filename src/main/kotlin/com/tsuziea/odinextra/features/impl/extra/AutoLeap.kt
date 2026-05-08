@@ -1,14 +1,14 @@
-package com.tsuziea.odinextra.features.impl.dungeon
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.equalsOneOf
@@ -20,14 +20,17 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.tsuziea.odinextra.events.NewSectionEvent
+import com.tsuziea.odinextra.utils.CustomCategory
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
 import com.tsuziea.odinextra.utils.dungeon.Section
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import kotlin.collections.contains
 
 object AutoLeap : Module(
     name = "Auto Leap",
-    description = "Auto leap during F7/M7 boss phases."
+    description = "Auto leap during F7/M7 boss phases.",
+    category = CustomCategory.Extra
 ) {
     private val phase2Dropdown by DropdownSetting("Phase 2 Settings", false)
     private val stormEnragedEnabled by BooleanSetting("Storm Enraged", true, desc = "-> Mage.").withDependency { phase2Dropdown }
@@ -118,7 +121,7 @@ object AutoLeap : Module(
             return
         }
 
-        if (stormDieEnabled && clazz !in setOf(DungeonClass.Healer, DungeonClass.Berserk) && msg.contains("I should have known that I stood no chance")) {
+        if (stormDieEnabled && clazz !in listOf(DungeonClass.Healer, DungeonClass.Berserk) && msg.contains("I should have known that I stood no chance")) {
             doLeap(DungeonClass.Healer)
             return
         }
@@ -148,7 +151,8 @@ object AutoLeap : Module(
             }
 
             Section.S2 -> {
-                if (s2ToS3Enabled && selfClass() !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(DungeonClass.Healer)
+                if (s2ToS3Enabled && selfClass() !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(
+                    DungeonClass.Healer)
             }
 
             Section.S3 -> {
@@ -200,7 +204,9 @@ object AutoLeap : Module(
                 val menu = leapMenu ?: return
                 schedule(2) {
                     menu.menu.slots.subList(11, 16)
-                        .firstOrNull { it.item.hoverName.string.noControlCodes.substringAfter(' ').equals(target, true) }
+                        .firstOrNull {
+                            it.item.hoverName.string.noControlCodes.substringAfter(' ').equals(target, true)
+                        }
                         ?.let { mc.player?.clickSlot(menu.menu.containerId, it.index) }
                     resetLeap()
                 }

@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.boss
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -9,21 +9,34 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
+import com.tsuziea.odinextra.utils.CustomCategory
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 
 object FuckDiorite : Module(
     name = "Fuck Diorite",
     description = "Replaces the pillars in the storm fight with glass.",
+    category = CustomCategory.Extra
 ) {
-    private val pillarBasedColor by BooleanSetting("Pillar Based", true, desc = "Swaps the diorite in the pillar to a corresponding color.")
+    private val pillarBasedColor by BooleanSetting(
+        "Pillar Based",
+        true,
+        desc = "Swaps the diorite in the pillar to a corresponding color."
+    )
     private val schitzo by BooleanSetting("Schitzo mode", false, desc = "Schtizoing.").withDependency { !pillarBasedColor }
-    private val colorIndex by SelectorSetting("Color", "None", arrayListOf(
-        "NONE", "WHITE", "ORANGE", "MAGENTA", "LIGHT_BLUE", "YELLOW", "LIME", "PINK",
-        "GRAY", "LIGHT_GRAY", "CYAN", "PURPLE", "BLUE", "BROWN", "GREEN", "RED", "BLACK"
-    ), desc = "Color for the stained glass.").withDependency { !pillarBasedColor && !schitzo }
+    private val colorIndex by SelectorSetting(
+        "Color", "None", arrayListOf(
+            "NONE", "WHITE", "ORANGE", "MAGENTA", "LIGHT_BLUE", "YELLOW", "LIME", "PINK",
+            "GRAY", "LIGHT_GRAY", "CYAN", "PURPLE", "BLUE", "BROWN", "GREEN", "RED", "BLACK"
+        ), desc = "Color for the stained glass."
+    ).withDependency { !pillarBasedColor && !schitzo }
 
-    private val pillars = arrayOf(BlockPos(46, 169, 41), BlockPos(46, 169, 65), BlockPos(100, 169, 65), BlockPos(100, 169, 41))
+    private val pillars = arrayOf(
+        BlockPos(46, 169, 41),
+        BlockPos(46, 169, 65),
+        BlockPos(100, 169, 65),
+        BlockPos(100, 169, 41)
+    )
     private val pillarColors = intArrayOf(5, 4, 10, 14)
 
     private val coordinates: Array<Set<BlockPos>> = Array(4) { pillarIndex ->

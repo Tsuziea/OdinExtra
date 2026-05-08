@@ -1,13 +1,15 @@
-package com.tsuziea.odinextra.features.impl.render
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.tsuziea.odinextra.mixin.OptionInstanceAccessor
+import com.tsuziea.odinextra.utils.CustomCategory
 
 object Fullbright : Module(
     name = "Fullbright",
-    description = "Forces gamma to full brightness."
+    description = "Forces gamma to full brightness.",
+    category = CustomCategory.Extra
 ) {
     init {
         on< WorldEvent.Load> {

@@ -2,7 +2,7 @@ package com.tsuziea.odinextra.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.tsuziea.odinextra.features.impl.render.CameraClip;
+import com.tsuziea.odinextra.features.impl.extra.CameraClip;
 import net.minecraft.client.Camera;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;

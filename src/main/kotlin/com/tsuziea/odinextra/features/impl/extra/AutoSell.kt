@@ -1,10 +1,11 @@
-package com.tsuziea.odinextra.features.impl.dungeon
+package com.tsuziea.odinextra.features.impl.extra
 
-import com.odtheking.odin.events.*
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.lore
 import com.odtheking.odin.utils.noControlCodes
+import com.tsuziea.odinextra.utils.CustomCategory
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.ClickType
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Items
 object AutoSell : Module(
     name = "Auto Sell",
     description = "Insta sell all items.",
+    category = CustomCategory.Extra
 ) {
     init {
         on<TickEvent.Start> {

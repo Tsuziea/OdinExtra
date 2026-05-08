@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.boss
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
@@ -10,15 +10,25 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
-import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils.currentTerm
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import com.tsuziea.odinextra.utils.CustomCategory
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 
-object AutoTerms : Module (
+object AutoTerms : Module(
     name = "Auto Terms",
-    description = "Automatically solves terminals."
+    description = "Automatically solves terminals.",
+    category = CustomCategory.Extra
 ) {
     private val delay by NumberSetting("Delay", 200L, 100, 300, 10, "Delay between each click.", "ms")
-    private val firstClickDelay by NumberSetting("First Click Delay", 300L, 200, 500, 10, "Delay before first click.", "ms")
+    private val firstClickDelay by NumberSetting(
+        "First Click Delay",
+        300L,
+        200,
+        500,
+        10,
+        "Delay before first click.",
+        "ms"
+    )
     private val skipMelody by BooleanSetting("Skip Melody", true, "Skipping delay checks for Melody.")
     private var firstClick = true
     private var lastClickAt = 0L
@@ -27,7 +37,7 @@ object AutoTerms : Module (
 
     init {
         on<TickEvent.Start> {
-            with(currentTerm ?: return@on) {
+            with(TerminalUtils.currentTerm ?: return@on) {
                 if (solution.isEmpty()) return@on
 
                 val now = System.currentTimeMillis()

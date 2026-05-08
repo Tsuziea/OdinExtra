@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.render.esp
+package com.tsuziea.odinextra.features.impl.extra.esp
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils

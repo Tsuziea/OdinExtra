@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.dungeon
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
@@ -8,13 +8,15 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.itemId
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.tsuziea.odinextra.utils.CustomCategory
 import com.tsuziea.odinextra.utils.leftClick
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.BlockHitResult
 
 object AutoSuperboom : Module(
     name = "Auto superboom",
-    description = "Automatically swaps to superboom when you click a breakable wall!"
+    description = "Automatically swaps to superboom when you click a breakable wall!",
+    category = CustomCategory.Extra
 ) {
     private val delay by NumberSetting("Delay", 50, 50, 200, 50, "Delay between each action.", "ms")
 

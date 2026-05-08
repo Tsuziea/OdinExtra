@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.dungeon
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.TickEvent
@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.itemId
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
+import com.tsuziea.odinextra.utils.CustomCategory
 import com.tsuziea.odinextra.utils.leftClick
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.core.BlockPos
@@ -24,13 +25,18 @@ import kotlin.collections.get
 
 object TriggerBot : Module(
     name = "Trigger Bot",
-    description = "Automatically triggers when hit result is target."
+    description = "Automatically triggers when hit result is target.",
+    category = CustomCategory.Extra
 ) {
 
     private val secret by BooleanSetting("Secret", true, desc = "Right clicks on secrets.")
     private val crystal by BooleanSetting("Crystal", true, desc = "Right clicks on crystals in P1.")
     private val lever by BooleanSetting("Lever", true, desc = "Left clicks on levers in P3.")
-    private val relic by BooleanSetting("Relic", true, desc = "Right clicks on relics and their respective pedestals in P5.")
+    private val relic by BooleanSetting(
+        "Relic",
+        true,
+        desc = "Right clicks on relics and their respective pedestals in P5."
+    )
 
     private var lastClick = 0L
 

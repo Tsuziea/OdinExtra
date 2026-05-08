@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.dungeon
+package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -15,21 +15,38 @@ import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.KuudraUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
+import com.tsuziea.odinextra.utils.CustomCategory
 
 object AutoGFS : Module(
     name = "Auto GFS",
-    description = "Automatically refills certain items from your sacks."
+    description = "Automatically refills certain items from your sacks.",
+    category = CustomCategory.Extra
 ) {
     private val inKuudra by BooleanSetting("In Kuudra", true, desc = "Only gfs in Kuudra.")
     private val inDungeon by BooleanSetting("In Dungeon", true, desc = "Only gfs in Dungeons.")
-    private val refillOnDungeonStart by BooleanSetting("Refill on Dungeon Start", true, desc = "Refill when a dungeon starts.")
+    private val refillOnDungeonStart by BooleanSetting(
+        "Refill on Dungeon Start",
+        true,
+        desc = "Refill when a dungeon starts."
+    )
     private val refillLeap by BooleanSetting("Refill Leaps", false, desc = "Refill spirit leaps.")
     private val refillPearl by BooleanSetting("Refill Pearl", false, desc = "Refill ender pearls.")
     private val refillJerry by BooleanSetting("Refill Jerry", false, desc = "Refill inflatable jerrys.")
     private val refillTNT by BooleanSetting("Refill TNT", false, desc = "Refill superboom tnt.")
     private val refillOnTimer by BooleanSetting("Refill on Timer", true, desc = "Refills on a timed interval.")
-    private val interval by NumberSetting("Interval", 5L, 1, 60, desc = "The interval in which to refill.", unit = "s").withDependency { refillOnTimer }
-    private val autoDraft by BooleanSetting("Auto Draft", true, desc = "Automatically get draft from the sack when puzzle failed.")
+    private val interval by NumberSetting(
+        "Interval",
+        5L,
+        1,
+        60,
+        desc = "The interval in which to refill.",
+        unit = "s"
+    ).withDependency { refillOnTimer }
+    private val autoDraft by BooleanSetting(
+        "Auto Draft",
+        true,
+        desc = "Automatically get draft from the sack when puzzle failed."
+    )
 
     private val puzzleFailRegex = Regex("^PUZZLE FAIL! (\\w{1,16}) .+$|^\\[STATUE] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.$")
     private val dungeonStartRegex = Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!")

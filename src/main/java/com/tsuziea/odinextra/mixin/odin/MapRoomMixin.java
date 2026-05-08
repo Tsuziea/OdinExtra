@@ -4,7 +4,7 @@ import com.odtheking.odin.features.impl.dungeon.DungeonMap;
 import com.odtheking.odin.features.impl.dungeon.map.MapRoom;
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomState;
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils;
-import com.tsuziea.odinextra.features.impl.render.esp.Mimic;
+import com.tsuziea.odinextra.features.impl.extra.esp.Mimic;
 import kotlin.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

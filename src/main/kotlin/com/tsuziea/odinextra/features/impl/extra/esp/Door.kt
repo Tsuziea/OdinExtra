@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.features.impl.render.esp
+package com.tsuziea.odinextra.features.impl.extra.esp
 
 import com.odtheking.odin.features.impl.dungeon.map.MapScanner
 import com.odtheking.odin.features.impl.dungeon.map.Door as MapDoor
