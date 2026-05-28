@@ -18,7 +18,7 @@ object Mob {
         level.entitiesForRendering().forEach { e ->
             if (!e.isAlive) return@forEach
 
-            if (e is Bat) entities.add(e)
+            if (e is Bat && !e.isInvisible) entities.add(e)
             if (e is WitherBoss && isWitherPhase()) entities.add(e)
 
             val stand = e as? ArmorStand ?: return@forEach
@@ -41,8 +41,6 @@ object Mob {
                 entities.add(player)
             }
         }
-
-        entities.removeIf { !it.isAlive || (it is Bat && hasNearbyBat(it)) }
     }
 
     private val starredRegex = Regex("^.*✯ .*\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?[kM]?❤$")
@@ -53,14 +51,6 @@ object Mob {
             is Player -> entity.uuid.version() == 2 && entity != mc.player
             else -> true
         }
-
-    private fun hasNearbyBat(bat: Bat): Boolean {
-        val level = mc.level ?: return false
-        return level.getEntities(bat, bat.boundingBox.inflate(2.0)) {
-            it is Bat && it.isAlive && it != bat
-        }.isNotEmpty()
-    }
-
 
     private fun isWitherPhase(): Boolean =
         when (DungeonUtils.getF7Phase()) {
