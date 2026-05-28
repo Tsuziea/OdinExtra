@@ -57,6 +57,7 @@ object AutoLeap : Module(
     private var leapMenu: AbstractContainerScreen<*>? = null
 
     private var archCount = 0
+    private var relicLept = false
 
     private val leapItemIds = setOf("SPIRIT_LEAP", "INFINITE_SPIRIT_LEAP")
     private val completedRegex = Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)$")
@@ -64,6 +65,7 @@ object AutoLeap : Module(
     init {
         on<WorldEvent.Load> {
             archCount = 0
+            relicLept = false
             resetLeap()
         }
 
@@ -93,7 +95,8 @@ object AutoLeap : Module(
     }
 
     private fun handleRelic() {
-        if (!relicEnabled || DungeonUtils.getF7Phase() == M7Phases.P5) return
+        if (!relicEnabled || DungeonUtils.getF7Phase() != M7Phases.P5) return
+        if (relicLept) return
 
         mc.player?.inventory?.getItem(8)?.itemId?.let { lastSlot ->
             val targetClass = when (lastSlot) {
@@ -101,7 +104,11 @@ object AutoLeap : Module(
                 "PURPLE_KING_RELIC", "BLUE_KING_RELIC" -> DungeonClass.Berserk
                 else -> null
             }
-            targetClass?.let { doLeap(it) }
+
+            if (targetClass != null) {
+                relicLept = true
+                doLeap(targetClass)
+            }
         }
     }
 
