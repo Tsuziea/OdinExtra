@@ -76,7 +76,7 @@ object AutoClicker : Module(
                 }
 
                 if (rightActive() && now >= nextRightClick) {
-                    if (mc.hitResult?.type != HitResult.Type.BLOCK || mc.player?.mainHandItem?.item !is BlockItem) {
+                    if (mc.player?.mainHandItem?.item !is BlockItem) {
                         KeyMapping.set(mc.options.keyUse.defaultKey, true)
                         return@on
                     }
