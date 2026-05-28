@@ -1,6 +1,5 @@
 package com.tsuziea.odinextra.features.impl.extra
 
-import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
@@ -19,17 +18,9 @@ object AutoTerms : Module(
     description = "Automatically solves terminals.",
     category = CustomCategory.Extra
 ) {
-    private val delay by NumberSetting("Delay", 200L, 100, 300, 10, "Delay between each click.", "ms")
-    private val firstClickDelay by NumberSetting(
-        "First Click Delay",
-        300L,
-        200,
-        500,
-        10,
-        "Delay before first click.",
-        "ms"
-    )
-    private val skipMelody by BooleanSetting("Skip Melody", true, "Skipping delay checks for Melody.")
+    private val delay by NumberSetting("Delay", 200L, 100, 300, 50, "Delay between each click.", "ms")
+    private val firstClickDelay by NumberSetting("First Click Delay", 300L, 200, 500, 50, "Delay before first click.", "ms")
+
     private var firstClick = true
     private var lastClickAt = 0L
     private var containerUpdated = false
@@ -43,13 +34,14 @@ object AutoTerms : Module(
                 val now = System.currentTimeMillis()
                 if (firstClick && (now - lastClickAt < firstClickDelay)) return@on
 
-                if (skipMelody && (type == TerminalTypes.MELODY)) {
+                if (type == TerminalTypes.MELODY) {
                     click(solution.find { it % 9 == 7 } ?: return@on, 2, false)
+                    firstClick = false
                     return@on
                 }
 
-                if (type != TerminalTypes.MELODY && !containerUpdated) return@on
                 if (now - lastClickAt < delay) return@on
+                if (!containerUpdated) return@on
 
                 firstClick = false
                 lastClickAt = now
@@ -58,7 +50,6 @@ object AutoTerms : Module(
                 val slotIndex = solution.firstOrNull() ?: return@on
 
                 when (type) {
-                    TerminalTypes.MELODY -> click(solution.find { it % 9 == 7 } ?: return@on, 2, false)
                     TerminalTypes.RUBIX -> click(
                         slotIndex,
                         if (solution.count { it == slotIndex } >= 3) 1 else 2,
