@@ -18,6 +18,11 @@ object Fullbright : Module(
         }
     }
 
+    override fun onEnable() {
+        super.onEnable()
+        if (mc.player != null) setGamma(16.0)
+    }
+
     override fun onDisable() {
         super.onDisable()
         setGamma(1.0)
