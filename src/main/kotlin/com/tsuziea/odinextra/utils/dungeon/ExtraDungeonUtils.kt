@@ -2,7 +2,6 @@ package com.tsuziea.odinextra.utils.dungeon
 
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room as DungeonRoom
 import net.minecraft.core.BlockPos
 object ExtraDungeonUtils {
@@ -23,13 +22,5 @@ object ExtraDungeonUtils {
         return DungeonUtils.passedRooms.firstOrNull { room ->
             room.roomComponents.any { it.vec2 == roomCenter }
         } ?: ScanUtils.scanRoom(roomCenter)
-    }
-
-    fun isSecret(blockPos: BlockPos): Boolean {
-        val room = getRoom(blockPos) ?: return false
-        val extraRoom = ExtraRoomUtils.matchRoom(room) ?: return false
-        return extraRoom.secrets.any { secret ->
-            room.getRealCoords(secret.blockPos) == blockPos
-        }
     }
 }

@@ -2,7 +2,7 @@ package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.features.Module
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 import net.minecraft.client.Minecraft
 import java.util.regex.Pattern
 

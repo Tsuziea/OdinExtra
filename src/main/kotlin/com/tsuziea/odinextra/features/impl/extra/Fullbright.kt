@@ -3,8 +3,8 @@ package com.tsuziea.odinextra.features.impl.extra
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.tsuziea.odinextra.features.CustomCategory
 import com.tsuziea.odinextra.mixin.OptionInstanceAccessor
-import com.tsuziea.odinextra.utils.CustomCategory
 
 object Fullbright : Module(
     name = "Fullbright",

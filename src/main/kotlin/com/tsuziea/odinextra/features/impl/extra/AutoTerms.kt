@@ -10,7 +10,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 
 object AutoTerms : Module(

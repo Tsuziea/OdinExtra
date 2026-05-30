@@ -4,7 +4,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.tsuziea.odinextra.events.InteractEvent
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 
 object BreakerHelper : Module(
     name = "Breaker Helper",

@@ -12,6 +12,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "ArmorStandRendererMixin",
     "odin.MapRoomMixin",
     "odin.ModuleManagerMixin",
     "BossHealthOverlayAccessor",

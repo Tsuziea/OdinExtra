@@ -9,7 +9,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 

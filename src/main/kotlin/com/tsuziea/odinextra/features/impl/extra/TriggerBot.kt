@@ -10,7 +10,7 @@ import com.odtheking.odin.utils.itemId
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 import com.tsuziea.odinextra.utils.leftClick
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.core.BlockPos
@@ -32,11 +32,7 @@ object TriggerBot : Module(
     private val secret by BooleanSetting("Secret", true, desc = "Right clicks on secrets.")
     private val crystal by BooleanSetting("Crystal", true, desc = "Right clicks on crystals in P1.")
     private val lever by BooleanSetting("Lever", true, desc = "Left clicks on levers in P3.")
-    private val relic by BooleanSetting(
-        "Relic",
-        true,
-        desc = "Right clicks on relics and their respective pedestals in P5."
-    )
+    private val relic by BooleanSetting("Relic", true, desc = "Right clicks on relics and their respective pedestals in P5.")
 
     private var lastClick = 0L
 
@@ -50,7 +46,7 @@ object TriggerBot : Module(
             if (!DungeonUtils.inDungeons) return@on
 
             val now = System.currentTimeMillis()
-            if (now - lastClick < 200L) return@on
+            if (now - lastClick < 250L) return@on
 
             if (secret && DungeonUtils.inClear) triggerSecret()
             if (crystal && DungeonUtils.getF7Phase() == M7Phases.P1) triggerCrystal()
@@ -65,6 +61,8 @@ object TriggerBot : Module(
         val hit = mc.hitResult ?: return
         val hitBlock = (hit as? BlockHitResult)?.blockPos ?: return
         val state = mc.level?.getBlockState(hitBlock) ?: return
+
+        if (state == Blocks.TRAPPED_CHEST) return
 
         if (DungeonUtils.isSecret(state, hitBlock)) {
             lastClick = System.currentTimeMillis()
@@ -90,10 +88,10 @@ object TriggerBot : Module(
         val hitBlock = (hit as? BlockHitResult)?.blockPos ?: return
         val state = mc.level?.getBlockState(hitBlock) ?: return
 
-        if (state.block == Blocks.LEVER) {
-            lastClick = System.currentTimeMillis()
-            leftClick()
-        }
+        if (state.block != Blocks.LEVER) return
+
+        leftClick()
+        lastClick = System.currentTimeMillis()
     }
 
     private fun triggerRelic() {

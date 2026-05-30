@@ -4,7 +4,6 @@ import com.odtheking.odin.features.impl.dungeon.DungeonMap;
 import com.odtheking.odin.features.impl.dungeon.map.MapRoom;
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomState;
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils;
-import com.tsuziea.odinextra.features.impl.extra.esp.Mimic;
 import kotlin.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,11 +32,6 @@ public class MapRoomMixin {
             )
     )
     private RoomState odinextra$allowUnvisitedRooms(MapRoom room) {
-        String mimicRoomName = Mimic.INSTANCE.getMimicRoomName();
-        if (!DungeonUtils.INSTANCE.getMimicKilled() && mimicRoomName != null && mimicRoomName.equals(room.getData().getName())) {
-            return RoomState.FAILED; // thus the map show mimic room in red...
-        }
-
         RoomState state = room.getState();
         if (state == RoomState.UNDISCOVERED || state == RoomState.UNOPENED) {
             return RoomState.DISCOVERED; // thus the map shows all scanned rooms

@@ -20,7 +20,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.tsuziea.odinextra.events.NewSectionEvent
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
 import com.tsuziea.odinextra.utils.dungeon.Section
 import com.tsuziea.odinextra.utils.rightClick
@@ -184,7 +184,6 @@ object AutoLeap : Module(
         val teammate = DungeonUtils.leapTeammates.firstOrNull { it.name.noControlCodes.equals(target, true) }
 
         if (teammate?.isDead == true) {
-            modMessage("§a[AutoLeap] §eLeap target dead.§r")
             resetLeap()
             return
         }
@@ -193,11 +192,12 @@ object AutoLeap : Module(
             LeapState.SELECT_ITEM -> {
                 val player = mc.player ?: return
                 val slot = leapSlot ?: (0..8).firstOrNull { idx -> player.inventory.getItem(idx).itemId in leapItemIds }?.also { leapSlot = it }
+
                 if (slot == null) {
-                    modMessage("§a[AutoLeap] §eCouldn't find Spirit/Infinite Leap in your hotbar.§r")
                     resetLeap()
                     return
                 }
+
                 if (player.mainHandItem.itemId !in leapItemIds) player.inventory.selectedSlot = slot
                 leapState = LeapState.OPEN_MENU
             }
@@ -225,19 +225,14 @@ object AutoLeap : Module(
 
     private fun doLeap(targetClass: DungeonClass) {
         val teammates = DungeonUtils.leapTeammates.filter { it.clazz == targetClass }
-        if (teammates.isEmpty()) {
-            modMessage("§a[AutoLeap] §eCannot find a player with that class.§r")
-            resetLeap()
-        }
+        if (teammates.isEmpty()) resetLeap()
 
         val teammate = teammates.first()
-        if (teammate.isDead) {
-            modMessage("§a[AutoLeap] §eLeap target dead.§r")
-            resetLeap()
-        }
+        if (teammate.isDead) resetLeap()
+
         targetName = teammate.name.noControlCodes
         leapState = LeapState.SELECT_ITEM
-        modMessage("§a[AutoLeap] §eLeaping to $targetName.§r")
+        modMessage("§8[§bAutoLeap§8] §aLeaping to $targetName.§r")
     }
 
     private fun resetLeap() {

@@ -1,4 +1,4 @@
-package com.tsuziea.odinextra.utils
+package com.tsuziea.odinextra.features
 
 import com.odtheking.odin.features.Category
 

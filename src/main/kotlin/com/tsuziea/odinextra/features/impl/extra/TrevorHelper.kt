@@ -14,7 +14,7 @@ import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.toFixed
-import com.tsuziea.odinextra.utils.CustomCategory
+import com.tsuziea.odinextra.features.CustomCategory
 import net.minecraft.world.entity.decoration.ArmorStand
 
 object TrevorHelper : Module(
