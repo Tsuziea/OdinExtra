@@ -3,24 +3,27 @@ package com.tsuziea.odinextra
 import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
-import com.tsuziea.odinextra.features.impl.boss.AutoTerms
-import com.tsuziea.odinextra.features.impl.boss.DragonsHp
-import com.tsuziea.odinextra.features.impl.boss.FuckDiorite
-import com.tsuziea.odinextra.features.impl.dungeon.AutoGFS
-import com.tsuziea.odinextra.features.impl.dungeon.AutoLeap
-import com.tsuziea.odinextra.features.impl.dungeon.AutoSell
-import com.tsuziea.odinextra.features.impl.dungeon.AutoSuperboom
-import com.tsuziea.odinextra.features.impl.dungeon.BreakerHelper
-import com.tsuziea.odinextra.features.impl.dungeon.CloseChest
-import com.tsuziea.odinextra.features.impl.dungeon.DungeonAbilities
-import com.tsuziea.odinextra.features.impl.dungeon.TriggerBot
-import com.tsuziea.odinextra.features.impl.render.CameraClip
-import com.tsuziea.odinextra.features.impl.render.DungeonESP
-import com.tsuziea.odinextra.features.impl.render.Fullbright
-import com.tsuziea.odinextra.features.impl.render.NameChanger
-import com.tsuziea.odinextra.features.impl.skyblock.AutoClicker
-import com.tsuziea.odinextra.features.impl.skyblock.AutoExperiments
-import com.tsuziea.odinextra.features.impl.skyblock.AutoHarp
+import com.tsuziea.odinextra.features.impl.extra.AutoClicker
+import com.tsuziea.odinextra.features.impl.extra.Sounds
+import com.tsuziea.odinextra.features.impl.extra.AutoExperiments
+import com.tsuziea.odinextra.features.impl.extra.AutoGFS
+import com.tsuziea.odinextra.features.impl.extra.AutoHarp
+import com.tsuziea.odinextra.features.impl.extra.AutoLeap
+import com.tsuziea.odinextra.features.impl.extra.AutoSell
+import com.tsuziea.odinextra.features.impl.extra.AutoSuperboom
+import com.tsuziea.odinextra.features.impl.extra.AutoTerms
+import com.tsuziea.odinextra.features.impl.extra.BreakerHelper
+import com.tsuziea.odinextra.features.impl.extra.CameraClip
+import com.tsuziea.odinextra.features.impl.extra.CloseChest
+import com.tsuziea.odinextra.features.impl.extra.DungeonAbilities
+import com.tsuziea.odinextra.features.impl.extra.DungeonESP
+import com.tsuziea.odinextra.features.impl.extra.FuckDiorite
+import com.tsuziea.odinextra.features.impl.extra.Fullbright
+import com.tsuziea.odinextra.features.impl.extra.HideDamage
+import com.tsuziea.odinextra.features.impl.extra.NameChanger
+import com.tsuziea.odinextra.features.impl.extra.StormTime
+import com.tsuziea.odinextra.features.impl.extra.TrevorHelper
+import com.tsuziea.odinextra.features.impl.extra.TriggerBot
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonListener
 import net.fabricmc.api.ClientModInitializer
 
@@ -31,14 +34,10 @@ object OdinExtra : ClientModInitializer {
         listOf(this, ExtraDungeonListener).forEach { EventBus.subscribe(it) }
 
         ModuleManager.registerModules(ModuleConfig("OdinExtra.json"),
-            // boss
-            AutoTerms, DragonsHp, FuckDiorite,
-            // dungeon
-            AutoGFS, AutoLeap, AutoSell, AutoSuperboom, BreakerHelper, CloseChest, DungeonAbilities, TriggerBot,
-            // render
-            CameraClip, DungeonESP, Fullbright, NameChanger,
-            // skyblock
-            AutoClicker, AutoHarp, AutoExperiments
+            AutoTerms, Sounds, FuckDiorite, AutoGFS, AutoLeap, AutoSell,
+            AutoSuperboom, BreakerHelper, CloseChest, DungeonAbilities, TriggerBot,
+            CameraClip, DungeonESP, Fullbright, HideDamage, NameChanger, AutoClicker, AutoHarp,
+            AutoExperiments, StormTime, TrevorHelper
         )
     }
 }
