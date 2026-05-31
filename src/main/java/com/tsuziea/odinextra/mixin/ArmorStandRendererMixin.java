@@ -1,6 +1,6 @@
 package com.tsuziea.odinextra.mixin;
 
-import com.tsuziea.odinextra.features.impl.extra.HideDamage;
+import com.tsuziea.odinextra.features.impl.extra.Nametags;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,7 +13,7 @@ public class ArmorStandRendererMixin {
 
     @Inject(method = "shouldShowName", at = @At("HEAD"), cancellable = true)
     private void odinextra$hideDamageName(ArmorStand armorStand, double distance, CallbackInfoReturnable<Boolean> cir) {
-        if (HideDamage.INSTANCE.shouldHide(armorStand)) {
+        if (Nametags.INSTANCE.shouldHide(armorStand)) {
             cir.setReturnValue(false);
         }
     }

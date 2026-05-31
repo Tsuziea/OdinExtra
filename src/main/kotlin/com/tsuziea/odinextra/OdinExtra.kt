@@ -20,11 +20,12 @@ import com.tsuziea.odinextra.features.impl.extra.DungeonAbilities
 import com.tsuziea.odinextra.features.impl.extra.DungeonESP
 import com.tsuziea.odinextra.features.impl.extra.FuckDiorite
 import com.tsuziea.odinextra.features.impl.extra.Fullbright
-import com.tsuziea.odinextra.features.impl.extra.HideDamage
 import com.tsuziea.odinextra.features.impl.extra.NameChanger
+import com.tsuziea.odinextra.features.impl.extra.Nametags
 import com.tsuziea.odinextra.features.impl.extra.Notify
 import com.tsuziea.odinextra.features.impl.extra.TrevorHelper
 import com.tsuziea.odinextra.features.impl.extra.TriggerBot
+import com.tsuziea.odinextra.utils.GlowUtils
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonListener
 import net.fabricmc.api.ClientModInitializer
 
@@ -32,13 +33,13 @@ import net.fabricmc.api.ClientModInitializer
 object OdinExtra : ClientModInitializer {
 
     override fun onInitializeClient() {
-        listOf(this, ExtraDungeonListener).forEach { EventBus.subscribe(it) }
+        listOf(this, ExtraDungeonListener, GlowUtils).forEach { EventBus.subscribe(it) }
 
         ModuleManager.registerModules(ModuleConfig("OdinExtra.json"),
             AutoTerms, Sounds, FuckDiorite, AutoGFS, AutoLeap, AutoSell,
             AutoSuperboom, BreakerHelper, CloseChest, DungeonAbilities, TriggerBot,
-            CameraClip, DungeonESP, Fullbright, HideDamage, NameChanger, AutoClicker, AutoHarp,
-            AutoExperiments, TrevorHelper, Notify, AutoDance
+            CameraClip, DungeonESP, Fullbright, NameChanger, AutoClicker, AutoHarp,
+            AutoExperiments, TrevorHelper, Notify, AutoDance, Nametags
         )
     }
 }

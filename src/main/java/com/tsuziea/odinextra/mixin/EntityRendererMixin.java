@@ -1,9 +1,11 @@
 package com.tsuziea.odinextra.mixin;
 
+import com.tsuziea.odinextra.features.impl.extra.Nametags;
 import com.tsuziea.odinextra.utils.GlowUtils;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +20,10 @@ public class EntityRendererMixin {
         Integer color = GlowUtils.INSTANCE.getGlowColor(entity);
         if (color != null) {
             state.outlineColor = color;
+        }
+
+        if (state.entityType == EntityType.PLAYER && Nametags.INSTANCE.shouldHideDisplayName(Math.sqrt(state.distanceToCameraSq))) {
+            state.nameTag = null;
         }
     }
 }

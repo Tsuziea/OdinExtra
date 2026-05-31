@@ -65,7 +65,7 @@ object DungeonESP : Module(
 
             if (mobEnabled) {
                 Mob.entities.forEach { entity ->
-                    entity.setGlow(true, mobColor)
+                    entity.setGlow(1000L, mobColor)
                 }
             }
         }

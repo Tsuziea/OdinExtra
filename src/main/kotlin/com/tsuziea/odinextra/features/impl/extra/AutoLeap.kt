@@ -22,6 +22,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.tsuziea.odinextra.events.NewSectionEvent
 import com.tsuziea.odinextra.features.CustomCategory
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
+import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils.getPlayerSection
 import com.tsuziea.odinextra.utils.dungeon.Section
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -156,10 +157,13 @@ object AutoLeap : Module(
 
     private fun handleNewSection(section: Section) {
         val clazz = DungeonUtils.currentDungeonPlayer.clazz
+        val player = mc.player ?: return
+        val pos = player.position()
+        val shouldLeap = getPlayerSection(pos) == section
 
         when (section) {
             Section.S1 -> {
-                if (s1ToS2Enabled) {
+                if (s1ToS2Enabled && shouldLeap ) {
                     val target = when (s1ToS2Target) {
                         0 -> DungeonClass.Mage
                         1 -> DungeonClass.Archer
@@ -170,16 +174,16 @@ object AutoLeap : Module(
             }
 
             Section.S2 -> {
-                if (s2ToS3Enabled && clazz !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(
+                if (s2ToS3Enabled && shouldLeap && clazz !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(
                     DungeonClass.Healer)
             }
 
             Section.S3 -> {
-                if (s3ToS4Enabled && clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
+                if (s3ToS4Enabled && shouldLeap && clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
             }
 
             Section.S4 -> {
-                if (coreOpenEnabled && clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
+                if (coreOpenEnabled && shouldLeap && clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
             }
 
             else -> return

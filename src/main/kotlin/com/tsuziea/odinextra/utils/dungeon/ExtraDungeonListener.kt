@@ -120,6 +120,7 @@ object ExtraDungeonListener {
             S3 -> S4
             S4 -> CORE
             CORE -> CORE
+            else -> Unknown
         }
         dungeonStates.section = current
         resetSectionState()
