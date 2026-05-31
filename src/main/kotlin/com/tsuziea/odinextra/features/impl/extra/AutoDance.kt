@@ -5,7 +5,6 @@ import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.noControlCodes
 import com.tsuziea.odinextra.features.CustomCategory
@@ -58,7 +57,6 @@ object AutoDance : Module(
 
     private fun handleBeat() {
         if (beats > 95) {
-            alert("§aDance completed!")
             reset()
             return
         }
