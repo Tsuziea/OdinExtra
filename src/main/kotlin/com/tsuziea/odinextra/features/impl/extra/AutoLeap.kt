@@ -25,13 +25,15 @@ import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonUtils
 import com.tsuziea.odinextra.utils.dungeon.Section
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import kotlin.collections.contains
+import kotlin.text.contains
 
 object AutoLeap : Module(
     name = "Auto Leap",
     description = "Auto leap during F7/M7 boss phases.",
     category = CustomCategory.Extra
 ) {
+    private val doorOpenEnabled by BooleanSetting("Door Open", true, desc = "-> Door Opener.")
+
     private val phase2Dropdown by DropdownSetting("Phase 2 Settings", false)
     private val stormEnragedEnabled by BooleanSetting("Storm Enraged", true, desc = "-> Mage.").withDependency { phase2Dropdown }
     private val stormDieEnabled by BooleanSetting("Storm Die", true, desc = "-> Healer.").withDependency { phase2Dropdown }
@@ -60,6 +62,7 @@ object AutoLeap : Module(
     private var relicLept = false
 
     private val leapItemIds = setOf("SPIRIT_LEAP", "INFINITE_SPIRIT_LEAP")
+    private val witherDoorRegex = Regex("^(.+) opened a WITHER door!$")
     private val completedRegex = Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)$")
 
     init {
@@ -86,7 +89,7 @@ object AutoLeap : Module(
         }
 
         on<ChatPacketEvent> {
-            if (DungeonUtils.inBoss) handleMessage(value.noControlCodes)
+            handleMessage(value.noControlCodes)
         }
 
         on<NewSectionEvent> {
@@ -113,7 +116,14 @@ object AutoLeap : Module(
     }
 
     private fun handleMessage(msg: String) {
-        val clazz = selfClass()
+        val clazz = DungeonUtils.currentDungeonPlayer.clazz
+
+        if (doorOpenEnabled && clazz in listOf(DungeonClass.Archer, DungeonClass.Mage) && witherDoorRegex.matches(msg)) {
+            val opener = DungeonUtils.doorOpener
+            val target = DungeonUtils.dungeonTeammatesNoSelf.firstOrNull { it.name == opener }?.clazz ?: return
+
+            doLeap(target)
+        }
 
         if (msg.contains("ARGH!")) {
             if (necronDieEnabled && clazz != DungeonClass.Healer && DungeonUtils.getF7Phase() != M7Phases.P5 && ++archCount == 2){
@@ -145,6 +155,8 @@ object AutoLeap : Module(
     }
 
     private fun handleNewSection(section: Section) {
+        val clazz = DungeonUtils.currentDungeonPlayer.clazz
+
         when (section) {
             Section.S1 -> {
                 if (s1ToS2Enabled) {
@@ -153,30 +165,25 @@ object AutoLeap : Module(
                         1 -> DungeonClass.Archer
                         else -> DungeonClass.Archer
                     }
-                    if (selfClass() != target) doLeap(target)
+                    if (clazz != target) doLeap(target)
                 }
             }
 
             Section.S2 -> {
-                if (s2ToS3Enabled && selfClass() !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(
+                if (s2ToS3Enabled && clazz !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(
                     DungeonClass.Healer)
             }
 
             Section.S3 -> {
-                if (s3ToS4Enabled && selfClass() != DungeonClass.Mage) doLeap(DungeonClass.Mage)
+                if (s3ToS4Enabled && clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
             }
 
             Section.S4 -> {
-                if (coreOpenEnabled && selfClass() != DungeonClass.Mage) doLeap(DungeonClass.Mage)
+                if (coreOpenEnabled && clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
             }
 
             else -> return
         }
-    }
-
-    private fun selfClass(): DungeonClass? {
-        val name = mc.player?.name?.string?.noControlCodes?.lowercase() ?: return null
-        return DungeonUtils.dungeonTeammates.firstOrNull { it.name.noControlCodes.lowercase() == name }?.clazz
     }
 
     private fun handleLeap() {
@@ -225,14 +232,20 @@ object AutoLeap : Module(
 
     private fun doLeap(targetClass: DungeonClass) {
         val teammates = DungeonUtils.leapTeammates.filter { it.clazz == targetClass }
-        if (teammates.isEmpty()) resetLeap()
+        if (teammates.isEmpty()) {
+            resetLeap()
+            return
+        }
 
         val teammate = teammates.first()
-        if (teammate.isDead) resetLeap()
+        if (teammate.isDead) {
+            resetLeap()
+            return
+        }
 
         targetName = teammate.name.noControlCodes
         leapState = LeapState.SELECT_ITEM
-        modMessage("§8[§bAutoLeap§8] §aLeaping to $targetName.§r")
+        modMessage("§8[§bAutoLeap§8] Leaping to $targetName.")
     }
 
     private fun resetLeap() {

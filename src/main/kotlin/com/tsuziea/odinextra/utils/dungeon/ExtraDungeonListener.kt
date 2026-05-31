@@ -56,22 +56,16 @@ object ExtraDungeonListener {
             val message = value.noControlCodes
 
             if (witherKeyRegex.containsMatchIn(message)) {
-                val matched = witherKeyRegex.find(message)
                 dungeonStates.keyPicked = true
-                dungeonStates.keyPicker = matched?.groupValues?.getOrNull(1)
             }
             if (witherDoorRegex.containsMatchIn(message)) {
                 dungeonStates.keyPicked = false
-                dungeonStates.keyPicker = null
             }
             if (bloodKeyRegex.containsMatchIn(message)) {
-                val matched = bloodKeyRegex.find(message)
                 dungeonStates.keyPicked = true
-                dungeonStates.keyPicker = matched?.groupValues?.getOrNull(1)
             }
             if (bloodDoorRegex.containsMatchIn(message)) {
                 dungeonStates.keyPicked = false
-                dungeonStates.keyPicker = null
             }
 
             when {
@@ -144,7 +138,6 @@ object ExtraDungeonListener {
 
     data class ExtraDungeonStates(
         var keyPicked: Boolean = false,
-        var keyPicker: String? = null,
         var section: Section = S1,
     )
 }
