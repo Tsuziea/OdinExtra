@@ -1,11 +1,11 @@
 package com.tsuziea.odinextra.features.impl.extra
 
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.noControlCodes
 import com.tsuziea.odinextra.features.CustomCategory
@@ -29,18 +29,9 @@ object AutoDance : Module(
             reset()
         }
 
-        on<ChatPacketEvent> {
-            if (isActive) return@on
-            if (value.noControlCodes.contains("You completed the FULL dance! Amazing!")) reset()
-        }
-
         on<TickEvent.Start> {
             if (mc.player == null || !isActive) return@on
-
-            if (!handled) {
-                handleBeat()
-                handled = true
-            }
+            if (!handled) handleBeat()
         }
 
         onReceive<ClientboundSetSubtitleTextPacket> {
@@ -66,6 +57,12 @@ object AutoDance : Module(
     }
 
     private fun handleBeat() {
+        if (beats > 95) {
+            alert("§aDance completed!")
+            reset()
+            return
+        }
+
         if (beats >= 8 && beats % 4 == 0) {
             setSneak(true)
         } else if (beats >= 8 && beats % 4 == 1) {
@@ -80,6 +77,8 @@ object AutoDance : Module(
         if (beats >= 64 && beats % 2 == 0) {
             schedule(16) { leftClick() }
         }
+
+        handled = true
     }
 
     private fun setSneak(state: Boolean) {
