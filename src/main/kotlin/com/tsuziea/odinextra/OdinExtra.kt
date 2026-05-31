@@ -4,6 +4,7 @@ import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
 import com.tsuziea.odinextra.features.impl.extra.AutoClicker
+import com.tsuziea.odinextra.features.impl.extra.AutoDance
 import com.tsuziea.odinextra.features.impl.extra.Sounds
 import com.tsuziea.odinextra.features.impl.extra.AutoExperiments
 import com.tsuziea.odinextra.features.impl.extra.AutoGFS
@@ -21,7 +22,7 @@ import com.tsuziea.odinextra.features.impl.extra.FuckDiorite
 import com.tsuziea.odinextra.features.impl.extra.Fullbright
 import com.tsuziea.odinextra.features.impl.extra.HideDamage
 import com.tsuziea.odinextra.features.impl.extra.NameChanger
-import com.tsuziea.odinextra.features.impl.extra.StormTime
+import com.tsuziea.odinextra.features.impl.extra.Notify
 import com.tsuziea.odinextra.features.impl.extra.TrevorHelper
 import com.tsuziea.odinextra.features.impl.extra.TriggerBot
 import com.tsuziea.odinextra.utils.dungeon.ExtraDungeonListener
@@ -37,7 +38,7 @@ object OdinExtra : ClientModInitializer {
             AutoTerms, Sounds, FuckDiorite, AutoGFS, AutoLeap, AutoSell,
             AutoSuperboom, BreakerHelper, CloseChest, DungeonAbilities, TriggerBot,
             CameraClip, DungeonESP, Fullbright, HideDamage, NameChanger, AutoClicker, AutoHarp,
-            AutoExperiments, StormTime, TrevorHelper
+            AutoExperiments, TrevorHelper, Notify, AutoDance
         )
     }
 }
