@@ -10,11 +10,10 @@ import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.drawText
 import com.tsuziea.odinextra.features.CustomCategory
-import com.tsuziea.odinextra.utils.GlowUtils.setGlow
 import net.minecraft.util.Mth.lerp
-import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.player.Player
 
 object Nametags : Module(
@@ -24,14 +23,11 @@ object Nametags : Module(
 ) {
     private const val NAME_RENDER_DISTANCE = 10.0
 
-    private val hideDamage by BooleanSetting("Hide Damage", true, desc = "Hides damage tags.")
     private val playerTracker by BooleanSetting("Player Tracker", true, desc = "Draws bounding box for the selected player.")
     private val targetName by StringSetting("Target", "Minikloon", desc = "Name of the target.").withDependency { playerTracker }
     private val color by ColorSetting("Color", Colors.MINECRAFT_AQUA, true, "Color of the outline.").withDependency { playerTracker }
 
     private var players = emptySet<Player>()
-
-    private val damageMarkers = setOf('✧', '✯', '❂', '✪', '✦', '✰', '☄', '✫', '➶', '⬥')
 
     init {
         on<WorldEvent.Load> {
@@ -57,28 +53,9 @@ object Nametags : Module(
                     drawText(player.displayName.string, pos, scale, false)
                 }
 
-                if (playerTracker && player.name.string == targetName) player.setGlow(1000L, color)
+                if (playerTracker && player.name.string == targetName) drawStyledBox(player.boundingBox, color, 2, false)
             }
         }
-    }
-
-    fun shouldHideDisplayName(distance: Double): Boolean {
-        return distance > NAME_RENDER_DISTANCE
-    }
-
-    fun shouldHide(armorStand: ArmorStand): Boolean {
-        if (!hideDamage || !armorStand.isInvisible || !armorStand.isCustomNameVisible || !armorStand.hasCustomName()) return false
-
-        val customName = armorStand.customName?.string?.trim() ?: return false
-        return isDamageText(customName)
-    }
-
-    private fun isDamageText(text: String): Boolean {
-        val stripped = text.replace(",", "")
-        if (stripped.isEmpty()) return false
-        if (!stripped.any(Char::isDigit)) return false
-
-        return stripped.all { it.isDigit() || it in damageMarkers }
     }
 }
 

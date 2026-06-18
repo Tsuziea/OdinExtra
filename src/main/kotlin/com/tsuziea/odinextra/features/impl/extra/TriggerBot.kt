@@ -5,7 +5,6 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.itemId
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -56,13 +55,13 @@ object TriggerBot : Module(
     }
 
     private fun triggerSecret() {
-        if (DungeonUtils.currentRoomName.equalsOneOf("Water Board", "Three Weirdos")) return
-
         val hit = mc.hitResult ?: return
         val hitBlock = (hit as? BlockHitResult)?.blockPos ?: return
         val state = mc.level?.getBlockState(hitBlock) ?: return
+        if (state.block == Blocks.TRAPPED_CHEST) return
 
-        if (state == Blocks.TRAPPED_CHEST) return
+        if (DungeonUtils.currentRoomName == "Three Weirdos") return
+        if (DungeonUtils.currentRoomName == "Water Board" && state.block == Blocks.LEVER) return
 
         if (DungeonUtils.isSecret(state, hitBlock)) {
             lastClick = System.currentTimeMillis()

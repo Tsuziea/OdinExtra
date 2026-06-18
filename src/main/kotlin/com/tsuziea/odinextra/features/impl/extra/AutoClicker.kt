@@ -23,27 +23,9 @@ object AutoClicker : Module(
     category = CustomCategory.Extra
 ) {
     private val mode by SelectorSetting("Mode", "Normal", listOf("Normal", "Toggle"), "Mode to trigger Auto Clicker")
-    private val leftCps by NumberSetting(
-        "Left CPS",
-        15.0f,
-        1.0,
-        15.0,
-        1,
-        desc = "The amount of left clicks per second to perform."
-    )
-    private val rightCps by NumberSetting(
-        "Right CPS",
-        15.0f,
-        1.0,
-        15.0,
-        1,
-        desc = "The amount of right clicks per second to perform."
-    ).withDependency { mode == 0 }
-    private val leftClickKeybind = KeybindSetting(
-        "Left Toggle", GLFW.GLFW_KEY_UNKNOWN, desc = "The keybind to toggle Auto Clicker."
-    ).onPress {
-        if (mode == 1) leftToggleState = !leftToggleState
-    }.withDependency { mode == 1 }
+    private val leftCps by NumberSetting("Left CPS", 15.0f, 1.0, 15.0, 1, desc = "The amount of left clicks per second to perform.")
+    private val rightCps by NumberSetting("Right CPS", 15.0f, 1.0, 15.0, 1, desc = "The amount of right clicks per second to perform.").withDependency { mode == 0 }
+    private val leftClickKeybind = KeybindSetting("Left Toggle", GLFW.GLFW_KEY_UNKNOWN, desc = "The keybind to toggle Auto Clicker.").onPress { if (mode == 1) leftToggleState = !leftToggleState }.withDependency { mode == 1 }
 
     private var nextLeftClick = .0
     private var nextRightClick = .0

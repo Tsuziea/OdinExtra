@@ -57,7 +57,7 @@ object AutoDance : Module(
     }
 
     private fun handleBeat() {
-        if (beats > 95) {
+        if (beats == 96) {
             alert("§aDance completed!")
             reset()
             return
