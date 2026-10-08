@@ -1,7 +1,6 @@
 package com.tsuziea.odinextra.utils.dungeon
 
-import com.odtheking.odin.utils.skyblock.SplitsManager.currentSplits
-import com.odtheking.odin.utils.skyblock.SplitsManager.getAndUpdateSplitsTimes
+import com.odtheking.odin.utils.skyblock.SplitsManager.currentRows
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import net.minecraft.world.phys.AABB
@@ -30,10 +29,6 @@ object ExtraDungeonUtils {
     )
 
     fun getStormSplitTimer(): Long? {
-        val (_, tickTimes, _) = getAndUpdateSplitsTimes(currentSplits)
-        val stormIndex = currentSplits.splits.indexOfFirst { it.name.contains("Storm") }
-        if (stormIndex < 0) return null
-
-        return tickTimes.getOrNull(stormIndex)
+        return currentRows().firstOrNull { it.name.contains("Storm") }?.tickTime
     }
 }

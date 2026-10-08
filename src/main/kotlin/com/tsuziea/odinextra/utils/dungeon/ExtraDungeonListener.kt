@@ -1,17 +1,13 @@
 package com.tsuziea.odinextra.utils.dungeon
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.tsuziea.odinextra.events.NewSectionEvent
-import com.odtheking.odin.features.impl.dungeon.DungeonMap
-import com.odtheking.odin.features.impl.dungeon.map.DungMap
-import com.odtheking.odin.features.impl.dungeon.map.MapScanner
-import com.odtheking.odin.features.impl.dungeon.map.SpecialColumn
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.tsuziea.odinextra.utils.dungeon.Section.*
@@ -29,48 +25,43 @@ object ExtraDungeonListener {
     private var levers = 0
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             dungeonStates = ExtraDungeonStates()
             resetSectionState()
-
-            if (DungeonMap.enabled) return@on
-            SpecialColumn.unload()
-            MapScanner.unload()
-            DungMap.unload()
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, _ ->
-            if (DungeonUtils.inClear && !DungeonMap.enabled) DungMap.onChunkLoad()
+            Unit
         }
 
         on<TickEvent.End> {
-            if (DungeonUtils.inClear && !DungeonMap.enabled) MapScanner.scan(world)
+            Unit
         }
 
         onReceive<ClientboundMapItemDataPacket> {
-            if (DungeonUtils.inClear && !DungeonMap.enabled) mc.execute { DungMap.rescanMapItem(this) }
+            Unit
         }
 
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inDungeons) return@on
-            val message = value.noControlCodes
+            val chatMessage = message.noControlCodes
 
-            if (witherKeyRegex.containsMatchIn(message)) {
+            if (witherKeyRegex.containsMatchIn(chatMessage)) {
                 dungeonStates.keyPicked = true
             }
-            if (witherDoorRegex.containsMatchIn(message)) {
+            if (witherDoorRegex.containsMatchIn(chatMessage)) {
                 dungeonStates.keyPicked = false
             }
-            if (bloodKeyRegex.containsMatchIn(message)) {
+            if (bloodKeyRegex.containsMatchIn(chatMessage)) {
                 dungeonStates.keyPicked = true
             }
-            if (bloodDoorRegex.containsMatchIn(message)) {
+            if (bloodDoorRegex.containsMatchIn(chatMessage)) {
                 dungeonStates.keyPicked = false
             }
 
             when {
-                completedRegex.matches(value) -> {
-                    val it = completedRegex.find(value) ?: return@on
+                completedRegex.matches(chatMessage) -> {
+                    val it = completedRegex.find(chatMessage) ?: return@on
                     val completed = (it.groupValues[4].toIntOrNull() ?: 0).apply { if (this == 1) firstInSection = true }
 
                     if (completed == (it.groupValues[5].toIntOrNull() ?: 0)) {
@@ -86,16 +77,16 @@ object ExtraDungeonListener {
                     lastCompleted = completed
                 }
 
-                gateRegex.matches(message) -> {
+                gateRegex.matches(chatMessage) -> {
                     gate = true
                     if (isComplete) newSection()
                 }
 
-                goldorRegex.matches(message) -> {
+                goldorRegex.matches(chatMessage) -> {
                     dungeonStates.section = S1
                 }
 
-                coreOpeningRegex.matches(message) -> {
+                coreOpeningRegex.matches(chatMessage) -> {
                     newSection()
                     resetSectionState()
                 }

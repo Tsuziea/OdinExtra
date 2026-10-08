@@ -5,10 +5,10 @@ import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting.Companion.isDown
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.tsuziea.odinextra.features.CustomCategory
+import com.tsuziea.odinextra.events.TickStart
 import com.tsuziea.odinextra.utils.isHolding
 import com.tsuziea.odinextra.utils.leftClick
 import com.tsuziea.odinextra.utils.rightClick
@@ -37,7 +37,7 @@ object AutoClicker : Module(
     init {
         this.registerSetting(leftClickKeybind)
 
-        on<TickEvent.Start> {
+        on<TickStart> {
             if (mc.player == null) return@on
             if (mc.screen != null) return@on
             val now = System.currentTimeMillis()

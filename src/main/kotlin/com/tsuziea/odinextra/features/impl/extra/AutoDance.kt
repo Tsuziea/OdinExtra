@@ -1,7 +1,6 @@
 package com.tsuziea.odinextra.features.impl.extra
 
-import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -9,6 +8,7 @@ import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.noControlCodes
 import com.tsuziea.odinextra.features.CustomCategory
+import com.tsuziea.odinextra.events.TickStart
 import com.tsuziea.odinextra.utils.leftClick
 import net.minecraft.client.KeyMapping
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
@@ -25,11 +25,11 @@ object AutoDance : Module(
     private var isActive = false
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             reset()
         }
 
-        on<TickEvent.Start> {
+        on<TickStart> {
             if (mc.player == null || !isActive) return@on
             if (!handled) handleBeat()
         }

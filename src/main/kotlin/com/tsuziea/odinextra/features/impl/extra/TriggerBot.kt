@@ -1,8 +1,7 @@
 package com.tsuziea.odinextra.features.impl.extra
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.itemId
@@ -10,12 +9,12 @@ import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.tsuziea.odinextra.features.CustomCategory
+import com.tsuziea.odinextra.events.TickStart
 import com.tsuziea.odinextra.utils.leftClick
 import com.tsuziea.odinextra.utils.rightClick
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -29,26 +28,24 @@ object TriggerBot : Module(
 ) {
 
     private val secret by BooleanSetting("Secret", true, desc = "Right clicks on secrets.")
-    private val crystal by BooleanSetting("Crystal", true, desc = "Right clicks on crystals in P1.")
     private val lever by BooleanSetting("Lever", true, desc = "Left clicks on levers in P3.")
     private val relic by BooleanSetting("Relic", true, desc = "Right clicks on relics and their respective pedestals in P5.")
 
     private var lastClick = 0L
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             lastClick = 0L
         }
 
-        on<TickEvent.Start> {
+        on<TickStart> {
             if (mc.screen != null) return@on
             if (!DungeonUtils.inDungeons) return@on
 
             val now = System.currentTimeMillis()
-            if (now - lastClick < 250L) return@on
+            if (now - lastClick < 500L) return@on
 
             if (secret && DungeonUtils.inClear) triggerSecret()
-            if (crystal && DungeonUtils.getF7Phase() == M7Phases.P1) triggerCrystal()
             if (lever && DungeonUtils.getF7Phase() == M7Phases.P3) triggerLever()
             if (relic && DungeonUtils.getF7Phase() == M7Phases.P5) triggerRelic()
         }
@@ -64,16 +61,6 @@ object TriggerBot : Module(
         if (DungeonUtils.currentRoomName == "Water Board" && state.block == Blocks.LEVER) return
 
         if (DungeonUtils.isSecret(state, hitBlock)) {
-            lastClick = System.currentTimeMillis()
-            rightClick()
-        }
-    }
-
-    private fun triggerCrystal() {
-        val hit = mc.hitResult ?: return
-        val hitEntity = (hit as? EntityHitResult)?.entity ?: return
-
-        if (hitEntity is EndCrystal) {
             lastClick = System.currentTimeMillis()
             rightClick()
         }

@@ -1,13 +1,14 @@
 package com.tsuziea.odinextra.features.impl.extra
 
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.tsuziea.odinextra.features.CustomCategory
+import com.tsuziea.odinextra.events.TickStart
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.level.block.Blocks
 
@@ -20,7 +21,7 @@ object AutoHarp : Module(
     private val lastQuartzState = BooleanArray(7)
 
     init {
-        on<TickEvent.Start> {
+        on<TickStart> {
             if (!LocationUtils.isInSkyblock) return@on
 
             val screen = mc.screen as? AbstractContainerScreen<*> ?: return@on
@@ -36,7 +37,7 @@ object AutoHarp : Module(
                 val block = slots[slotIndex].item.item as? BlockItem ?: return@forEachIndexed
                 val isQuartz = block.block == Blocks.QUARTZ_BLOCK
 
-                if (isQuartz && !lastQuartzState[i]) mc.gameMode?.handleInventoryMouseClick(screen.menu.containerId, slotIndex, 0, ClickType.CLONE, player)
+                if (isQuartz && !lastQuartzState[i]) player.clickSlot(slotIndex, 0, ContainerInput.CLONE)
                 lastQuartzState[i] = isQuartz
             }
         }

@@ -4,30 +4,36 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.equalsOneOf
+import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.itemId
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.tsuziea.odinextra.events.NewSectionEvent
+import com.tsuziea.odinextra.events.TickStart
 import com.tsuziea.odinextra.features.CustomCategory
 import com.tsuziea.odinextra.utils.dungeon.Section
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import kotlin.text.contains
 
-object AutoLeap : Module(
-    name = "Auto Leap",
-    description = "Auto leap during F7/M7 boss phases.",
+object FastLeap : Module(
+    name = "Fast Leap",
+    description = "Class-based semi auto leap for F7/M7 boss phases.",
     category = CustomCategory.Extra
 ) {
+    private val doorOpenEnabled by BooleanSetting("Door Open", true, desc = "-> Door Opener.")
+
+    private val phase1Dropdown by DropdownSetting("Phase 1 Settings", false)
+    private val crystalEnabled by BooleanSetting("Crystal", true, desc = "-> Tank.").withDependency { phase1Dropdown }
+
     private val phase2Dropdown by DropdownSetting("Phase 2 Settings", false)
     private val stormEnragedEnabled by BooleanSetting("Storm Enraged", true, desc = "-> Mage.").withDependency { phase2Dropdown }
     private val stormDieEnabled by BooleanSetting("Storm Die", true, desc = "-> Healer.").withDependency { phase2Dropdown }
@@ -46,35 +52,39 @@ object AutoLeap : Module(
     private val relicEnabled by BooleanSetting("Relic", true, desc = "Green -> Archer; Purple/Blue -> Berserk").withDependency { phase5Dropdown }
 
     private enum class LeapState { IDLE, SELECT_ITEM, CLICK_TARGET }
+
     private var leapState = LeapState.IDLE
-
     private var leapSlot: Int? = null
+    private var leapStartAt = 0L
     private var targetName: String? = null
-
-    private var archCount = 0
     private var relicLept = false
 
     private val leapItemIds = setOf("SPIRIT_LEAP", "INFINITE_SPIRIT_LEAP")
+    private val witherDoorRegex = Regex("^(.+) opened a WITHER door!$")
 
     init {
-        on<WorldEvent.Load> {
-            archCount = 0
+        on<LevelEvent.Load> {
             relicLept = false
             resetLeap()
         }
 
-        on<TickEvent.Start> {
+        on<TickStart> {
             handleLeap()
+            handleCrystal()
             handleRelic()
         }
 
-        on<ChatPacketEvent> {
-            handleMessage(value.noControlCodes)
+        on<MessageEvent.Chat> {
+            handleMessage(message)
         }
 
         on<NewSectionEvent> {
             handleNewSection(previous)
         }
+    }
+
+    private fun handleCrystal() {
+
     }
 
     private fun handleRelic() {
@@ -83,8 +93,8 @@ object AutoLeap : Module(
 
         mc.player?.inventory?.getItem(8)?.itemId?.let { lastSlot ->
             val targetClass = when (lastSlot) {
-                "GREEN_KING_RELIC" -> DungeonClass.Archer
-                "PURPLE_KING_RELIC", "BLUE_KING_RELIC" -> DungeonClass.Berserk
+                "GREEN_KING_RELIC" -> DungeonClass.ARCHER
+                "PURPLE_KING_RELIC", "BLUE_KING_RELIC" -> DungeonClass.BERSERK
                 else -> null
             }
 
@@ -97,22 +107,33 @@ object AutoLeap : Module(
 
     private fun handleMessage(msg: String) {
         val clazz = DungeonUtils.currentDungeonPlayer.clazz
+        val name = DungeonUtils.currentDungeonPlayer.name
 
-        if (msg.contains("ARGH!")) {
-            if (necronDieEnabled && clazz != DungeonClass.Healer && DungeonUtils.getF7Phase() != M7Phases.P5 && ++archCount == 2){
-                doLeap(DungeonClass.Healer)
-                archCount = 0
-                return
-            }
-        }
+        if (doorOpenEnabled && clazz in listOf(DungeonClass.ARCHER, DungeonClass.MAGE) && witherDoorRegex.matches(msg)) {
+            val opener = DungeonUtils.doorOpener
+            val target = DungeonUtils.dungeonTeammatesNoSelf.firstOrNull { it.name == opener }?.clazz ?: return
 
-        if (stormEnragedEnabled && clazz == DungeonClass.Archer && msg.contains("Storm is enraged")) {
-            doLeap(DungeonClass.Mage)
+            doLeap(target)
             return
         }
 
-        if (stormDieEnabled && clazz !in listOf(DungeonClass.Healer, DungeonClass.Berserk) && msg.contains("I should have known that I stood no chance")) {
-            doLeap(DungeonClass.Healer)
+        if (msg.noControlCodes.contains("$name picked up an Energy Crystal!") && crystalEnabled && DungeonUtils.getF7Phase() == M7Phases.P1) {
+            schedule(2) { doLeap(DungeonClass.TANK) }
+            return
+        }
+
+        if (msg.noControlCodes.contains("Storm is enraged") && stormEnragedEnabled && clazz == DungeonClass.ARCHER) {
+            doLeap(DungeonClass.MAGE)
+            return
+        }
+
+        if (msg.noControlCodes.contains("[BOSS] Storm: I should have known that I stood no chance.") && stormDieEnabled && clazz !in listOf(DungeonClass.HEALER, DungeonClass.BERSERK)) {
+            doLeap(DungeonClass.HEALER)
+            return
+        }
+
+        if (msg.noControlCodes.contains("[BOSS] Necron: Let's make some space!") && necronDieEnabled && clazz != DungeonClass.HEALER && DungeonUtils.getF7Phase() == M7Phases.P4){
+            doLeap(DungeonClass.HEALER)
             return
         }
     }
@@ -124,25 +145,25 @@ object AutoLeap : Module(
             Section.S1 -> {
                 if (s1ToS2Enabled) {
                     val target = when (s1ToS2Target) {
-                        0 -> DungeonClass.Mage
-                        1 -> DungeonClass.Archer
-                        else -> DungeonClass.Archer
+                        0 -> DungeonClass.MAGE
+                        1 -> DungeonClass.ARCHER
+                        else -> DungeonClass.ARCHER
                     }
                     if (clazz != target) doLeap(target)
                 }
             }
 
             Section.S2 -> {
-                if (s2ToS3Enabled&& clazz !in listOf(DungeonClass.Healer, DungeonClass.Mage)) doLeap(
-                    DungeonClass.Healer)
+                if (s2ToS3Enabled&& clazz !in listOf(DungeonClass.HEALER, DungeonClass.MAGE)) doLeap(
+                    DungeonClass.HEALER)
             }
 
             Section.S3 -> {
-                if (s3ToS4Enabled&& clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
+                if (s3ToS4Enabled&& clazz != DungeonClass.MAGE) doLeap(DungeonClass.MAGE)
             }
 
             Section.S4 -> {
-                if (coreOpenEnabled&& clazz != DungeonClass.Mage) doLeap(DungeonClass.Mage)
+                if (coreOpenEnabled&& clazz != DungeonClass.MAGE) doLeap(DungeonClass.MAGE)
             }
 
             else -> return
@@ -152,8 +173,9 @@ object AutoLeap : Module(
     private fun handleLeap() {
         val target = targetName ?: return
         val teammate = DungeonUtils.leapTeammates.firstOrNull { it.name.noControlCodes.equals(target, true) }
+        val now = System.currentTimeMillis()
 
-        if (teammate?.isDead == true) {
+        if (teammate?.isDead == true || now - leapStartAt > 3000) {
             resetLeap()
             return
         }
@@ -178,7 +200,7 @@ object AutoLeap : Module(
 
                 screen.menu.slots.subList(11, 16).firstOrNull {
                     it.item.hoverName.string.noControlCodes.substringAfter(' ').equals(target, true)
-                }?.let { mc.player?.clickSlot(screen.menu.containerId, it.index) }
+                }?.let { mc.player?.clickSlot(it.index) }
 
                 resetLeap()
             }
@@ -200,9 +222,11 @@ object AutoLeap : Module(
             return
         }
 
+        schedule(2){ alert("§bLeap!") }
+
         targetName = teammate.name.noControlCodes
         leapState = LeapState.SELECT_ITEM
-        modMessage("§8[§bAutoLeap§8] §rLeaping to §a$targetName.")
+        leapStartAt = System.currentTimeMillis()
     }
 
     private fun resetLeap() {

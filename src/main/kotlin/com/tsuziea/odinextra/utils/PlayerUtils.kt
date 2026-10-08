@@ -19,3 +19,7 @@ fun rightClick() {
 fun isHolding(itemId: String): Boolean {
     return mc.player?.mainHandItem?.itemId == itemId
 }
+
+fun isHolding(itemIds: Set<String>): Boolean {
+    return mc.player?.mainHandItem?.itemId in itemIds
+}

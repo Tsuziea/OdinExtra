@@ -1,14 +1,14 @@
 package com.tsuziea.odinextra.features.impl.extra
 
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.lore
 import com.odtheking.odin.utils.noControlCodes
 import com.tsuziea.odinextra.features.CustomCategory
+import com.tsuziea.odinextra.events.TickStart
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.entity.player.Inventory
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.Items
 
 object AutoSell : Module(
@@ -17,7 +17,7 @@ object AutoSell : Module(
     category = CustomCategory.Extra
 ) {
     init {
-        on<TickEvent.Start> {
+        on<TickStart> {
             val player = mc.player ?: return@on
             val screen = mc.screen as? AbstractContainerScreen<*> ?: return@on
             val menu = screen.menu
@@ -41,7 +41,7 @@ object AutoSell : Module(
                 if (blacklist.any { name.contains(it, true) }) return@forEachIndexed
                 if (!sellList.any { name.contains(it, true) }) return@forEachIndexed
 
-                mc.gameMode?.handleInventoryMouseClick(menu.containerId, index, 0, ClickType.CLONE, player)
+                mc.gameMode?.handleContainerInput(menu.containerId, index, 0, ContainerInput.CLONE, player)
                 return@forEachIndexed
             }
         }
